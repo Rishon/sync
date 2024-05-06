@@ -1,0 +1,14 @@
+name: sync
+version: '${version}'
+main: dev.rishon.sync.Sync
+api-version: '1.20'
+prefix: Sync
+folia-supported: true
+authors: [ Rishon ]
+description: sync players between instances
+website: https://rishon.systems
+commands:
+  sync:
+    permission: sync.command.use
+  whereami:
+    permission: sync.command.whereami
