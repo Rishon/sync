@@ -5,6 +5,7 @@ import dev.rishon.sync.jedis.JedisManager
 import dev.rishon.sync.jedis.packets.ConnectPacket
 import dev.rishon.sync.jedis.packets.DisconnectPacket
 import dev.rishon.sync.utils.ColorUtil
+import dev.rishon.sync.utils.Utils
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -37,9 +38,7 @@ class Connections(private val handler: MainHandler) : Listener {
         // Add player to online players
         JedisManager.instance.sendPacket(
             ConnectPacket(
-                playerData.location,
-                player.name,
-                uuid
+                playerData.location, player.name, uuid, Utils.getSkin(player)
             )
         )
     }

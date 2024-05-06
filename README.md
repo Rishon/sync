@@ -15,4 +15,4 @@ $ cd sync
 
 ## Run
 
-Drag the jar from ``build/libs/`` into all of your instances.
+Drag the jar from ``build/libs`` into all of your instances.

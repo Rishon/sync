@@ -13,13 +13,15 @@ import org.bukkit.Location
 import org.bukkit.Server
 import org.bukkit.craftbukkit.CraftServer
 import org.bukkit.craftbukkit.CraftWorld
-import org.bukkit.craftbukkit.entity.CraftPlayer
 import org.bukkit.entity.Player
 import java.util.*
 
 
 class ConnectPacket(
-    private val location: MutableMap<String, Any>, private val playerName: String, private val playerUUID: UUID
+    private val location: MutableMap<String, Any>,
+    private val playerName: String,
+    private val playerUUID: UUID,
+    private val skin: Array<String>
 ) : IPacket {
 
     override fun onReceive() {
@@ -52,21 +54,12 @@ class ConnectPacket(
         val level = (location.world as CraftWorld).handle
         val gameProfile = GameProfile(playerUUID, playerName)
         gameProfile.properties.put(
-            "textures", Property("textures", getSkin(viewer)[0], getSkin(viewer)[1])
+            "textures", Property("textures", this.skin[0], this.skin[1])
         )
         val nmsServer: MinecraftServer = (server as CraftServer).server
         val fakePlayer = ServerPlayer(nmsServer, level, gameProfile, ClientInformation.createDefault())
         fakePlayer.setPos(location.x, location.y, location.z)
         fakePlayer.spawnIn(level)
         ClientAddPlayerPacket.sendPacket(viewer, fakePlayer)
-    }
-
-    private fun getSkin(player: Player): Array<String> {
-        val playerNMS = (player as CraftPlayer).handle
-        val profile = playerNMS.bukkitEntity.profile
-        val property = profile.properties["textures"].iterator().next()
-        val texture: String = property.value
-        val signature: String = property.signature.toString()
-        return arrayOf(texture, signature)
     }
 }

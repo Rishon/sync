@@ -11,6 +11,7 @@ import dev.rishon.sync.jedis.packets.ConnectPacket
 import dev.rishon.sync.listeners.*
 import dev.rishon.sync.tasks.InstanceTask
 import dev.rishon.sync.utils.SchedulerUtil
+import dev.rishon.sync.utils.Utils
 
 class MainHandler(val instance: Sync) : IHandler {
 
@@ -71,7 +72,14 @@ class MainHandler(val instance: Sync) : IHandler {
             val playerData = this.redisData?.getPlayerDataAsync(uuid) ?: return
             redisData?.loadPlayerInfo(player, playerData)
             // Add player to online players
-            JedisManager.instance.sendPacket(ConnectPacket(player.location.serialize(), player.name, uuid))
+            JedisManager.instance.sendPacket(
+                ConnectPacket(
+                    player.location.serialize(),
+                    player.name,
+                    uuid,
+                    Utils.getSkin(player)
+                )
+            )
         }
     }
 

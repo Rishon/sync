@@ -16,13 +16,15 @@ class AsyncChat : Listener {
         val player = event.player;
         val renderedComponent: Component =
             Component.text(player.name).append(Component.text(": ")).append(event.message())
+
         event.renderer { _, _, _, _ -> return@renderer renderedComponent }
+
         JedisManager.instance.sendPacket(
             ChatPacket(
                 player.name,
                 JSONComponentSerializer.json().serialize(renderedComponent)
             )
-        );
+        )
     }
 
 }
