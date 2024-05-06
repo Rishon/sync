@@ -89,7 +89,7 @@ class RedisData : IDataModule {
 
     // Cache Server Data
     fun setServerDataAsync(serverData: ServerData) {
-        SchedulerUtil.runTaskAsync {
+        SchedulerUtil.runTaskSync {
             jedisPool!!.resource.use { jedis ->
                 val json = serverData.toString()
                 jedis[serverIdentifier] = json
@@ -125,6 +125,13 @@ class RedisData : IDataModule {
             }
         }
         return future.join()
+    }
+
+    fun getPlayerDataSync(uuid: UUID): PlayerData? {
+        jedisPool!!.resource.use { jedis ->
+            val json = jedis["$playerIdentifier$uuid"] ?: return PlayerData()
+            return PlayerData.fromJson(json)
+        }
     }
 
     fun removePlayerDataAsync(uuid: UUID) {

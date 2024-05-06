@@ -87,7 +87,7 @@ class MainHandler(val instance: Sync) : IHandler {
         this.instance.server.onlinePlayers.forEach { player ->
             val uuid = player.uniqueId
             val redisData = this.redisData
-            val playerData = redisData?.getPlayerDataAsync(uuid) ?: return
+            val playerData = redisData?.getPlayerDataSync(uuid) ?: return
             redisData.savePlayerInfo(player, playerData)
             playerData.let { this.sqlData?.saveUser(uuid, it) }
         }

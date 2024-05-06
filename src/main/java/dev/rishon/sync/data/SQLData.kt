@@ -49,8 +49,14 @@ class SQLData(val handler: MainHandler) : IDataModule {
     override fun end() {
         try {
             this.connection?.close()
-            if (this.hikariDataSource != null) this.hikariDataSource?.close()
+            if (this.hikariDataSource != null) {
+                this.hikariDataSource?.close()
+                println("Data source closed successfully.")
+            } else {
+                println("Data source was already null.")
+            }
         } catch (e: SQLException) {
+            println("Error occurred while closing connection: ${e.message}")
             e.printStackTrace()
         }
     }

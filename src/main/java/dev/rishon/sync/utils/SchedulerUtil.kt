@@ -8,26 +8,28 @@ import org.bukkit.scheduler.BukkitScheduler
 object SchedulerUtil {
 
     // Bukkit Scheduler
-    private var scheduler: BukkitScheduler = Bukkit.getScheduler()
+
+    @JvmStatic
+    var scheduler: BukkitScheduler = Bukkit.getScheduler()
 
     @JvmStatic
     fun runTaskAsync(runnable: Runnable) {
-        scheduler.runTaskAsynchronously(Sync.instance, runnable)
+        this.scheduler.runTaskAsynchronously(Sync.instance, runnable)
     }
 
     @JvmStatic
     fun runTaskTimerAsync(runnable: Runnable, ticks: Long) {
-        scheduler.runTaskTimerAsynchronously(Sync.instance, runnable, 0, ticks)
+        this.scheduler.runTaskTimerAsynchronously(Sync.instance, runnable, 0, ticks)
     }
 
     @JvmStatic
     fun runTaskTimerSync(runnable: Runnable, ticks: Long) {
-        scheduler.runTaskTimer(Sync.instance, runnable, 0, ticks)
+        this.scheduler.runTaskTimer(Sync.instance, runnable, 0, ticks)
     }
 
     @JvmStatic
     fun runTaskSync(runnable: Runnable) {
-        scheduler.runTask(Sync.instance, runnable)
+        this.scheduler.runTask(Sync.instance, runnable)
     }
 
 }

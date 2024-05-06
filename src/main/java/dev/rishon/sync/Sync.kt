@@ -4,6 +4,7 @@ import dev.rishon.sync.handler.FileHandler
 import dev.rishon.sync.handler.IHandler
 import dev.rishon.sync.handler.MainHandler
 import dev.rishon.sync.utils.FoliaSupport
+import dev.rishon.sync.utils.SchedulerUtil
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.*
 
@@ -35,6 +36,8 @@ class Sync : JavaPlugin() {
 
     override fun onDisable() {
         this.handlers.forEach { it.end() }
+        SchedulerUtil.scheduler.cancelTasks(this)
+        this.server.scheduler.cancelTasks(this)
         this.logger.info("${this.name} has been disabled!")
     }
 

@@ -5,6 +5,7 @@ import dev.rishon.sync.jedis.JedisManager
 import dev.rishon.sync.jedis.packets.ConnectPacket
 import dev.rishon.sync.jedis.packets.DisconnectPacket
 import dev.rishon.sync.utils.ColorUtil
+import dev.rishon.sync.utils.SchedulerUtil
 import dev.rishon.sync.utils.Utils
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -52,7 +53,7 @@ class Connections(private val handler: MainHandler) : Listener {
 
         // Save player data
         redisData.savePlayerInfo(player, playerData)
-        playerData.let { this.handler.sqlData?.saveUser(uuid, it) }
+        SchedulerUtil.runTaskAsync { this.handler.sqlData?.saveUser(uuid, playerData) }
 
         // Remove player from online players
         JedisManager.instance.sendPacket(DisconnectPacket(uuid))
