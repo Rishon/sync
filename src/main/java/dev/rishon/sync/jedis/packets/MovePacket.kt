@@ -1,24 +1,24 @@
 package dev.rishon.sync.jedis.packets
 
 import dev.rishon.sync.data.CacheData
-import dev.rishon.sync.nms.ClientSneakPlayerPacket
-import dev.rishon.sync.utils.LoggerUtil
+import dev.rishon.sync.nms.ClientPlayerMovePacket
 import org.bukkit.Bukkit
 import java.util.*
 
-class SneakPacket(private val playerUUID: UUID, private val isSneaking: Boolean) : IPacket {
+class MovePacket(
+    private val playerUUID: UUID,
+    private val location: MutableMap<String, Any>,
+) : IPacket {
 
     override fun onReceive() {
-        LoggerUtil.info("Received sneak packet for $playerUUID")
-
         val server = Bukkit.getServer()
         val onlinePlayers = server.onlinePlayers
         val cacheData = CacheData.instance
-        val fakePlayer = cacheData.fakePlayers[playerUUID]
+        val fakePlayer = cacheData.fakePlayers[playerUUID] ?: return
 
         onlinePlayers.forEach { player ->
             if (player.uniqueId == playerUUID) return@forEach
-            ClientSneakPlayerPacket.sendPacket(player, fakePlayer!!, isSneaking)
+            ClientPlayerMovePacket.sendPacket(player, fakePlayer, location)
         }
     }
 }

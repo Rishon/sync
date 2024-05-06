@@ -7,6 +7,7 @@ import dev.rishon.sync.api.SyncAPI
 import dev.rishon.sync.data.RedisData
 import dev.rishon.sync.jedis.packets.IPacket
 import dev.rishon.sync.utils.LoggerUtil
+import dev.rishon.sync.utils.SchedulerUtil
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPubSub
 
@@ -26,16 +27,13 @@ class JedisManager(redisData: RedisData) {
             this.jedisPubSub = object : JedisPubSub() {
                 override fun onMessage(channel: String, message: String) {
                     if (channel != mainChannel) return
-                    LoggerUtil.info("Received message: $message")
                     try {
                         val jsonObject = gson.fromJson(message, JsonObject::class.java)
                         val packetClassName = jsonObject.remove("sync-packet").asString
                         val packetClass = Class.forName(packetClassName)
                         val packet: IPacket = gson.fromJson(jsonObject, packetClass) as IPacket
                         packet.onReceive()
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        LoggerUtil.error("An error occurred while parsing message: $message - ${e.message}")
+                    } catch (ignored: Exception) {
                     }
                 }
             }
@@ -49,19 +47,21 @@ class JedisManager(redisData: RedisData) {
     }
 
     fun sendPacket(packet: IPacket) {
-        val fieldMap: MutableMap<String, Any> = HashMap()
-        for (field in packet.javaClass.getDeclaredFields()) {
-            field.setAccessible(true)
-            fieldMap[field.name] = field.get(packet)
-        }
+        SchedulerUtil.runTaskAsync {
+            val fieldMap: MutableMap<String, Any> = HashMap()
+            for (field in packet.javaClass.getDeclaredFields()) {
+                field.setAccessible(true)
+                fieldMap[field.name] = field.get(packet)
+            }
 
-        val jsonObject = gson.fromJson(gson.toJson(fieldMap), JsonObject::class.java)
-        jsonObject.addProperty("sync-packet", packet.javaClass.getName())
-        jsonObject.addProperty("instance", SyncAPI.getAPI().getInstanceID())
+            val jsonObject = gson.fromJson(gson.toJson(fieldMap), JsonObject::class.java)
+            jsonObject.addProperty("sync-packet", packet.javaClass.getName())
+            jsonObject.addProperty("instance", SyncAPI.getAPI().getInstanceID())
 
-        this.jedisPool.resource.use { jedis ->
-            jedis.publish(this.mainChannel, jsonObject.toString())
-            jedis.close()
+            this.jedisPool.resource.use { jedis ->
+                jedis.publish(this.mainChannel, jsonObject.toString())
+                jedis.close()
+            }
         }
     }
 

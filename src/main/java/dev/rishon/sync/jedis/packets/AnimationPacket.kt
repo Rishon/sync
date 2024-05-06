@@ -18,6 +18,7 @@ class AnimationPacket(private val playerUUID: UUID, private val animation: Anima
         val fakePlayer = cacheData.fakePlayers[playerUUID]
 
         onlinePlayers.forEach { player ->
+            if (player.uniqueId == playerUUID) return@forEach
             ClientAnimatePlayerPacket.sendPacket(player, fakePlayer!!, animation)
         }
     }

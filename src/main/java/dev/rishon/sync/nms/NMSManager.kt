@@ -20,7 +20,8 @@ object NMSManager {
         }
     }
 
-    private fun getDataWatcher(entity: Entity): SynchedEntityData {
+    @JvmStatic
+    fun getDataWatcher(entity: Entity): SynchedEntityData {
         return entity.entityData
     }
 

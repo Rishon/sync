@@ -1,5 +1,6 @@
 package dev.rishon.sync.nms
 
+import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.world.entity.Entity
 import org.bukkit.entity.Player
 import java.lang.reflect.Field
@@ -8,6 +9,10 @@ interface IPacket {
 
     fun updateMetadata(player: Player, entity: Entity) {
         NMSManager.sendUpdatePacket(player, entity)
+    }
+
+    fun getDataWatcher(entity: Entity): SynchedEntityData {
+        return NMSManager.getDataWatcher(entity)
     }
 
     fun setValue(packet: Any, fieldName: String, value: Any) {

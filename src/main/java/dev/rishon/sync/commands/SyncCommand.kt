@@ -1,9 +1,7 @@
 package dev.rishon.sync.commands
 
-import dev.rishon.sync.enums.Animations
 import dev.rishon.sync.enums.Colors
 import dev.rishon.sync.handler.MainHandler
-import dev.rishon.sync.nms.ClientAnimatePlayerPacket
 import dev.rishon.sync.utils.ColorUtil
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -23,16 +21,6 @@ class SyncCommand(val handler: MainHandler) : CommandExecutor {
         when (args?.get(0)) {
             "test" -> {
                 val player = sender as Player
-                // Create fake player
-                val cacheData = handler.cacheData
-                cacheData?.fakePlayers?.forEach { (uuid, serverPlayer) ->
-                    if (serverPlayer == null) {
-                        player.sendMessage("Server player is null")
-                        return@forEach
-                    }
-                    ClientAnimatePlayerPacket.sendPacket(player, serverPlayer, Animations.SWING_MAIN_ARM)
-                    player.sendMessage("Sent animation packet for $uuid")
-                }
             }
         }
 
