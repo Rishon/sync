@@ -1,7 +1,6 @@
 package dev.rishon.sync.nms
 
 import net.minecraft.world.entity.Entity
-import org.bukkit.craftbukkit.entity.CraftEntity
 import org.bukkit.entity.Player
 import java.lang.reflect.Field
 

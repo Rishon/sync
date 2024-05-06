@@ -1,9 +1,7 @@
 package dev.rishon.sync.jedis.packets
 
 import dev.rishon.sync.data.RedisData
-import dev.rishon.sync.nms.ClientRemovePlayerPacket
 import dev.rishon.sync.utils.LoggerUtil
-import org.bukkit.Bukkit
 import java.util.*
 
 class DisconnectPacket(private val playerUUID: UUID) : IPacket {

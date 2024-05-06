@@ -49,6 +49,7 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 tasks.shadowJar {
+    // TODO: Remove this when the plugin is ready for production
     destinationDirectory = file("C:\\Users\\i9\\Downloads\\server\\server1\\plugins")
     // Copy the jar to another directory
     doLast {
