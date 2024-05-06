@@ -3,6 +3,7 @@ package dev.rishon.sync.handler
 import dev.rishon.sync.Sync
 import dev.rishon.sync.commands.SyncCommand
 import dev.rishon.sync.commands.WhereAmICommand
+import dev.rishon.sync.data.CacheData
 import dev.rishon.sync.data.IDataModule
 import dev.rishon.sync.data.RedisData
 import dev.rishon.sync.data.SQLData
@@ -19,14 +20,17 @@ class MainHandler(val instance: Sync) : IHandler {
     private val dataModules: MutableList<IDataModule> = mutableListOf()
     var sqlData: SQLData? = null
     var redisData: RedisData? = null
+    var cacheData: CacheData? = null
 
     override fun init() {
         handler = this
         // Register dataModules
         this.sqlData = SQLData(this)
         this.redisData = RedisData()
+        this.cacheData = CacheData()
         this.dataModules.add(this.sqlData!!)
         this.dataModules.add(this.redisData!!)
+        this.dataModules.add(this.cacheData!!)
         this.dataModules.forEach { it.init() }
 
         // Register
@@ -54,6 +58,8 @@ class MainHandler(val instance: Sync) : IHandler {
         pm.registerEvents(ServerPing(this), instance)
         pm.registerEvents(AsyncChat(), instance)
         pm.registerEvents(WorldEvents(), instance)
+        pm.registerEvents(AnimationEvent(), instance)
+        pm.registerEvents(ServerTick(), instance)
     }
 
     private fun registerCommands() {
@@ -84,12 +90,16 @@ class MainHandler(val instance: Sync) : IHandler {
     }
 
     private fun saveOnlinePlayers() {
+        val redisData = this.redisData
         this.instance.server.onlinePlayers.forEach { player ->
             val uuid = player.uniqueId
-            val redisData = this.redisData
-            val playerData = redisData?.getPlayerDataSync(uuid) ?: return
+            val playerData = redisData?.getPlayerDataSync(uuid)
+            if (playerData == null) {
+                player.sendMessage("Player data is null")
+                return
+            }
             redisData.savePlayerInfo(player, playerData)
-            playerData.let { this.sqlData?.saveUser(uuid, it) }
+            this.sqlData?.saveUser(uuid, playerData)
         }
     }
 

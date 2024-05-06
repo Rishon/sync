@@ -20,14 +20,12 @@ object ClientAddPlayerPacket : IPacket {
         setValue(serverPlayer, "c", craftPlayer.handle.connection);
         connection.send(
             ClientboundPlayerInfoUpdatePacket(
-                ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER,
-                serverPlayer
+                ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER, serverPlayer
             )
         )
         connection.send(
             ClientboundPlayerInfoUpdatePacket(
-                ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LISTED,
-                serverPlayer
+                ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LISTED, serverPlayer
             )
         )
 
@@ -39,5 +37,4 @@ object ClientAddPlayerPacket : IPacket {
         dataValues.add(SynchedEntityData.DataValue.create(EntityDataAccessor(17, EntityDataSerializers.BYTE), b))
         connection.send(ClientboundSetEntityDataPacket(serverPlayer.id, dataValues))
     }
-
 }

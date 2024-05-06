@@ -2,6 +2,7 @@ package dev.rishon.sync.jedis.packets
 
 import com.mojang.authlib.GameProfile
 import com.mojang.authlib.properties.Property
+import dev.rishon.sync.data.CacheData
 import dev.rishon.sync.data.RedisData
 import dev.rishon.sync.nms.ClientAddPlayerPacket
 import dev.rishon.sync.utils.LoggerUtil
@@ -30,13 +31,13 @@ class ConnectPacket(
         val server = Bukkit.getServer()
         val onlinePlayers = server.onlinePlayers
 
-        onlinePlayers.forEach { p ->
-            if (p.uniqueId.toString() == playerUUID.toString()) {
+        onlinePlayers.forEach { player ->
+            if (player.uniqueId.toString() == playerUUID.toString()) {
                 Bukkit.broadcastMessage("Player already exists")
                 return@forEach
             }
             createFakePlayer(
-                p, server, Location.deserialize(location), playerName, playerUUID
+                player, server, Location.deserialize(location), playerName, playerUUID
             ) // Fake player of the player that has joined
             Bukkit.broadcastMessage("Created fake player for $playerName")
         }
@@ -44,6 +45,7 @@ class ConnectPacket(
         // Add player to online players
         val serverData = RedisData.instance.getServerDataAsync()
         serverData.onlinePlayers.add(playerUUID)
+
         // RedisData.instance.setServerDataAsync(serverData)
     }
 
@@ -61,5 +63,9 @@ class ConnectPacket(
         fakePlayer.setPos(location.x, location.y, location.z)
         fakePlayer.spawnIn(level)
         ClientAddPlayerPacket.sendPacket(viewer, fakePlayer)
+
+        // Add to local cacheData
+        val cacheData = CacheData.instance
+        cacheData.fakePlayers[playerUUID] = fakePlayer
     }
 }
