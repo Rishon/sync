@@ -54,13 +54,17 @@ class JedisManager(redisData: RedisData) {
                 fieldMap[field.name] = field.get(packet)
             }
 
-            val jsonObject = gson.fromJson(gson.toJson(fieldMap), JsonObject::class.java)
-            jsonObject.addProperty("sync-packet", packet.javaClass.getName())
-            jsonObject.addProperty("instance", SyncAPI.getAPI().getInstanceID())
+            try {
+                val jsonObject = gson.fromJson(gson.toJson(fieldMap), JsonObject::class.java)
+                jsonObject.addProperty("sync-packet", packet.javaClass.getName())
+                jsonObject.addProperty("instance", SyncAPI.getAPI().getInstanceID())
 
-            this.jedisPool.resource.use { jedis ->
-                jedis.publish(this.mainChannel, jsonObject.toString())
-                jedis.close()
+                this.jedisPool.resource.use { jedis ->
+                    jedis.publish(this.mainChannel, jsonObject.toString())
+                    jedis.close()
+                }
+            } catch (e: Exception) {
+                LoggerUtil.error("Failed to send packet: ${packet.javaClass.simpleName}")
             }
         }
     }

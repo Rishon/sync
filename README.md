@@ -39,7 +39,9 @@ Drag the jar from ``build/libs`` into all of your instances.
 - ✅ Sync world difficulty
 - ✅ Sync player gamemode
 - ✅ Sync player potion effects
-- 
+- ✅ Sync swimming animation
+- ✅ Sync glide animation
+
 ### In Progress:
 
 - 🟧 API in progress
@@ -48,6 +50,5 @@ Drag the jar from ``build/libs`` into all of your instances.
 ### To Do:
 
 - ❌ Sync player damage hit
-- ❌ Sync player swimming animation
 
 #### ⚠️ Probably not going to do any world related stuff (blocks, entities, etc...)

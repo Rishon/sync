@@ -2,12 +2,13 @@ package dev.rishon.sync.listeners
 
 import dev.rishon.sync.enums.Animations
 import dev.rishon.sync.jedis.JedisManager
-import dev.rishon.sync.jedis.packets.AnimationPacket
-import dev.rishon.sync.jedis.packets.MovePacket
-import dev.rishon.sync.jedis.packets.SneakPacket
+import dev.rishon.sync.jedis.packets.*
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
+import org.bukkit.event.entity.EntityToggleGlideEvent
+import org.bukkit.event.entity.EntityToggleSwimEvent
 import org.bukkit.event.player.PlayerAnimationEvent
 import org.bukkit.event.player.PlayerAnimationType
 import org.bukkit.event.player.PlayerMoveEvent
@@ -39,7 +40,27 @@ class AnimationEvent : Listener {
         val player = event.player
         val uuid = player.uniqueId
         val isSneaking = event.isSneaking
+        val isSwimming = player.isSwimming
+        if (isSwimming) return
         JedisManager.instance.sendPacket(SneakPacket(uuid, isSneaking))
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    private fun onPlayerSwim(event: EntityToggleSwimEvent) {
+        val entity = event.entity
+        val player = entity as? Player ?: return
+        val uuid = player.uniqueId
+        val isSwimming = event.isSwimming
+        JedisManager.instance.sendPacket(SwimPacket(uuid, isSwimming))
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    private fun onPlayerGlide(event: EntityToggleGlideEvent) {
+        val entity = event.entity
+        val player = entity as? Player ?: return
+        val uuid = player.uniqueId
+        val isGliding = event.isGliding
+        JedisManager.instance.sendPacket(GlidePacket(uuid, isGliding))
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

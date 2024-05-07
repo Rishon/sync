@@ -59,11 +59,7 @@ class ConnectPacket(
         }
 
         onlinePlayers.forEach { player ->
-            Bukkit.broadcastMessage("Checking player ${player.uniqueId}")
-            if (player.uniqueId.toString() == playerUUID.toString()) {
-                Bukkit.broadcastMessage("Player already exists")
-                return@forEach
-            }
+            Bukkit.broadcastMessage("Creating fake player ${player.uniqueId}")
             createFakePlayer(
                 player, server, Location.deserialize(this.location), this.playerName, this.playerUUID, this.skin
             ) // Fake player of the player that has joined
@@ -88,9 +84,12 @@ class ConnectPacket(
         )
         val nmsServer: MinecraftServer = (server as CraftServer).server
         val fakePlayer = ServerPlayer(nmsServer, level, gameProfile, ClientInformation.createDefault())
-        fakePlayer.setPos(location.x, location.y, location.z)
-        fakePlayer.spawnIn(level)
-        ClientAddPlayerPacket.sendPacket(viewer, fakePlayer)
+
+        if (playerUUID != viewer.uniqueId) {
+            fakePlayer.setPos(location.x, location.y, location.z)
+            fakePlayer.spawnIn(level)
+            ClientAddPlayerPacket.sendPacket(viewer, fakePlayer)
+        }
 
         // Add to local cacheData
         val cacheData = CacheData.instance
