@@ -36,16 +36,18 @@ Drag the jar from ``build/libs`` into all of your instances.
 - ✅ Sync server online players count
 - ✅ Sync player punch animation
 
+- ✅ Sync world difficulty
+- ✅ Sync player gamemode
+- ✅ Sync player potion effects
+- 
 ### In Progress:
 
 - 🟧 API in progress
+- 🟧 Sync player equipment
 
 ### To Do:
 
-- ❌ Sync world difficulty
-- ❌ Sync player gamemode
-- ❌ Sync player effects
-- ❌ Sync player equipment
 - ❌ Sync player damage hit
+- ❌ Sync player swimming animation
 
 #### ⚠️ Probably not going to do any world related stuff (blocks, entities, etc...)

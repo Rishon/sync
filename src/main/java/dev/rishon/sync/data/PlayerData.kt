@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import dev.rishon.sync.utils.InventorySerialization
 import dev.rishon.sync.utils.LoggerUtil
+import org.bukkit.GameMode
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import java.util.*
@@ -37,6 +38,12 @@ class PlayerData {
 
     @JsonProperty("player_hunger")
     var hunger: Int = 20
+
+    @JsonProperty("player_gamemode")
+    var gamemode: GameMode = GameMode.SURVIVAL
+
+    @JsonProperty("player_effects")
+    var potionEffects: List<MutableMap<String, Any>> = mutableListOf()
 
     fun loadInventory(player: Player, redisData: RedisData) {
         // Load inventory

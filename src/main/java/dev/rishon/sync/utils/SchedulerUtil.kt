@@ -8,7 +8,6 @@ import org.bukkit.scheduler.BukkitScheduler
 object SchedulerUtil {
 
     // Bukkit Scheduler
-
     @JvmStatic
     var scheduler: BukkitScheduler = Bukkit.getScheduler()
 

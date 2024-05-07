@@ -34,9 +34,16 @@ class ConnectPacket(
         val cacheData = CacheData.instance
 
         cacheData.fakePlayers.forEach { (uuid, fakePlayer) ->
-            Bukkit.broadcastMessage("Checking fake player $uuid")
-            if (uuid.toString() == playerUUID.toString()) return@forEach
-            val joinedPlayer = server.getPlayer(playerUUID) ?: return@forEach
+            Bukkit.broadcastMessage("Checking fake player $uuid size ${cacheData.fakePlayers.size}")
+            if (uuid.toString() == playerUUID.toString()) {
+                Bukkit.broadcastMessage("Fake player already exists")
+                return@forEach
+            }
+            val joinedPlayer = server.getPlayer(playerUUID)
+            if (joinedPlayer == null) {
+                Bukkit.broadcastMessage("Player $playerUUID is null")
+                return@forEach
+            }
             val fakePlayerLocation = fakePlayer.bukkitEntity.location.serialize()
             val fakePlayerName = fakePlayer.gameProfile.name
             Bukkit.broadcastMessage("Attempting to create a fake player of $fakePlayerName")

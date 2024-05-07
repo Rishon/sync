@@ -10,6 +10,7 @@ import dev.rishon.sync.utils.SchedulerUtil
 import org.bukkit.Location
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
+import org.bukkit.potion.PotionEffect
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPoolConfig
 import redis.clients.jedis.params.ScanParams
@@ -170,6 +171,10 @@ class RedisData : IDataModule {
         player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue = playerData.maxHealth
         // Load player hunger
         player.foodLevel = playerData.hunger
+        // Load player gamemode
+        player.gameMode = playerData.gamemode
+        // Load player effects
+        playerData.potionEffects.forEach { player.addPotionEffect(PotionEffect(it)) }
     }
 
     fun savePlayerInfo(player: Player, playerData: PlayerData) {
@@ -187,6 +192,12 @@ class RedisData : IDataModule {
         playerData.maxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.value ?: 20.0
         // Save player hunger
         playerData.hunger = player.foodLevel
+        // Save player gamemode
+        playerData.gamemode = player.gameMode
+        // Save player effects
+        val effectsCollection: MutableCollection<MutableMap<String, Any>> = mutableListOf()
+        player.activePotionEffects.forEach { effectsCollection.add(it.serialize()) }
+        playerData.potionEffects = effectsCollection.toList()
     }
 
     companion object {

@@ -34,9 +34,7 @@ object InventorySerialization {
         return try {
             val inputStream = ByteArrayInputStream(Base64Coder.decodeLines(data))
             val dataInput = BukkitObjectInputStream(inputStream)
-
             val size = dataInput.readInt()
-
             val inventory = player.inventory
 
             for (i in 0 until size) {

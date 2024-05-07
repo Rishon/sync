@@ -26,7 +26,8 @@ class WorldEvents : Listener {
                     world.worldBorder.center.serialize(),
                     world.weatherDuration,
                     world.hasStorm(),
-                    world.isThundering
+                    world.isThundering,
+                    world.difficulty
                 )
             )
         }
@@ -46,7 +47,8 @@ class WorldEvents : Listener {
                     world.worldBorder.center.serialize(),
                     world.weatherDuration,
                     world.hasStorm(),
-                    world.isThundering
+                    world.isThundering,
+                    world.difficulty
                 )
             )
         }
@@ -66,7 +68,8 @@ class WorldEvents : Listener {
                     world.worldBorder.center.serialize(),
                     world.weatherDuration,
                     world.hasStorm(),
-                    world.isThundering
+                    world.isThundering,
+                    world.difficulty
                 )
             )
         }
@@ -86,7 +89,8 @@ class WorldEvents : Listener {
                     newCenter.serialize(),
                     world.weatherDuration,
                     world.hasStorm(),
-                    world.isThundering
+                    world.isThundering,
+                    world.difficulty
                 )
             )
         }
