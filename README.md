@@ -35,7 +35,6 @@ Drag the jar from ``build/libs`` into all of your instances.
 - ✅ Sync player chat
 - ✅ Sync server online players count
 - ✅ Sync player punch animation
-
 - ✅ Sync world difficulty
 - ✅ Sync player gamemode
 - ✅ Sync player potion effects

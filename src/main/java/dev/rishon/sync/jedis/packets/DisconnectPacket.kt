@@ -17,8 +17,8 @@ class DisconnectPacket(private val playerUUID: UUID) : IPacket {
         val entityId = cacheData.fakePlayers[playerUUID]?.id
 
         onlinePlayers.forEach { player ->
+            if (playerUUID == player.uniqueId) return@forEach
             ClientRemovePlayerPacket.sendPacket(player, entityId!!)
-            Bukkit.broadcastMessage("Removed player $playerUUID")
         }
 
         // Remove player from local cache

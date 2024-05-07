@@ -6,7 +6,6 @@ import dev.rishon.sync.utils.ColorUtil
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
-import org.bukkit.entity.Player
 
 
 class SyncCommand(val handler: MainHandler) : CommandExecutor {
@@ -19,9 +18,7 @@ class SyncCommand(val handler: MainHandler) : CommandExecutor {
         }
 
         when (args?.get(0)) {
-            "test" -> {
-                val player = sender as Player
-            }
+            "test" -> {}
         }
 
         return false

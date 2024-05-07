@@ -9,6 +9,7 @@ import dev.rishon.sync.data.RedisData
 import dev.rishon.sync.data.SQLData
 import dev.rishon.sync.jedis.JedisManager
 import dev.rishon.sync.jedis.packets.ConnectPacket
+import dev.rishon.sync.jedis.packets.DisconnectPacket
 import dev.rishon.sync.listeners.*
 import dev.rishon.sync.tasks.InstanceTask
 import dev.rishon.sync.utils.SchedulerUtil
@@ -79,10 +80,7 @@ class MainHandler(val instance: Sync) : IHandler {
             // Add player to online players
             JedisManager.instance.sendPacket(
                 ConnectPacket(
-                    player.location.serialize(),
-                    player.name,
-                    uuid,
-                    Utils.getSkin(player)
+                    player.location.serialize(), player.name, uuid, Utils.getSkin(player)
                 )
             )
         }
@@ -97,6 +95,10 @@ class MainHandler(val instance: Sync) : IHandler {
                 player.sendMessage("Player data is null")
                 return
             }
+
+            // Disconnect player
+            JedisManager.instance.sendPacket(DisconnectPacket(uuid))
+
             redisData.savePlayerInfo(player, playerData)
             this.sqlData?.saveUser(uuid, playerData)
         }

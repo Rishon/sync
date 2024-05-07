@@ -70,6 +70,7 @@ class InventoryEvents(private val redisData: RedisData) : Listener {
         val newSlot = event.newSlot
         var itemNewSlot = player.inventory.getItem(newSlot)
         if (itemNewSlot == null) itemNewSlot = ItemStack(Material.AIR)
+
         // Mainhand
         equipmentList.add(
             Pair.of(
@@ -91,6 +92,7 @@ class InventoryEvents(private val redisData: RedisData) : Listener {
         val uuid = player.uniqueId
         // TODO: Improve this
         val equipmentList = mutableListOf<Pair<EquipmentSlot, MutableMap<String, Any>>>()
+
         // Mainhand
         equipmentList.add(
             Pair.of(
