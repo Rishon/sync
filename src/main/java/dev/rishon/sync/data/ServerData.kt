@@ -14,6 +14,12 @@ class ServerData {
     @JsonProperty("instanceID")
     var instanceID: String? = null
 
+    @JsonProperty("ip")
+    var serverIP: String? = null
+
+    @JsonProperty("port")
+    var serverPort: Int? = null
+
     @JsonProperty("onlinePlayers")
     var onlinePlayers: MutableSet<UUID> = mutableSetOf()
 

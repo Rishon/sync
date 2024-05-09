@@ -22,7 +22,7 @@ class InventoryEvents(private val redisData: RedisData) : Listener {
     private fun onInventoryCloseEvent(event: InventoryCloseEvent) {
         val player = event.player
         val uuid = player.uniqueId
-        val playerData = redisData.getPlayerDataAsync(uuid)
+        val playerData = redisData.getPlayerData(uuid) ?: return
         val playerInventory = player.inventory
         playerData.inventory = InventorySerialization.toBase64(playerInventory)
     }
@@ -31,7 +31,7 @@ class InventoryEvents(private val redisData: RedisData) : Listener {
     private fun onArmorEquip(event: PlayerArmorChangeEvent) {
         val player = event.player
         val uuid = player.uniqueId
-        val playerData = redisData.getPlayerDataAsync(uuid)
+        val playerData = redisData.getPlayerData(uuid) ?: return
         val playerInventory = player.inventory
 
         // Update player inventory in cache
@@ -43,18 +43,12 @@ class InventoryEvents(private val redisData: RedisData) : Listener {
         player.equipment.armorContents.forEachIndexed { index, itemStack ->
             if (itemStack == null) {
                 val emptyItemStack = ItemStack(Material.AIR)
-                equipmentList.add(
-                    Pair.of(
-                        EquipmentSlot.byTypeAndIndex(EquipmentSlot.Type.ARMOR, index), emptyItemStack.serialize()
-                    )
+                addEquipment(
+                    equipmentList, EquipmentSlot.byTypeAndIndex(EquipmentSlot.Type.ARMOR, index), emptyItemStack
                 )
                 return@forEachIndexed
             }
-            equipmentList.add(
-                Pair.of(
-                    EquipmentSlot.byTypeAndIndex(EquipmentSlot.Type.ARMOR, index), itemStack.serialize()
-                )
-            )
+            addEquipment(equipmentList, EquipmentSlot.byTypeAndIndex(EquipmentSlot.Type.ARMOR, index), itemStack)
         }
 
         JedisManager.instance.sendPacket(EquipmentPacket(uuid, equipmentList))
@@ -72,39 +66,38 @@ class InventoryEvents(private val redisData: RedisData) : Listener {
         if (itemNewSlot == null) itemNewSlot = ItemStack(Material.AIR)
 
         // Mainhand
-        equipmentList.add(
-            Pair.of(
-                EquipmentSlot.MAINHAND, itemNewSlot.serialize()
-            )
-        )
+        addEquipment(equipmentList, EquipmentSlot.MAINHAND, itemNewSlot)
+
         // Offhand
-        equipmentList.add(
-            Pair.of(
-                EquipmentSlot.OFFHAND, player.inventory.itemInOffHand.serialize()
-            )
-        )
+        addEquipment(equipmentList, EquipmentSlot.OFFHAND, player.inventory.itemInOffHand)
+
         JedisManager.instance.sendPacket(EquipmentPacket(uuid, equipmentList))
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    private fun onOffhand(event: PlayerSwapHandItemsEvent) {
+    private fun onOffhandSwap(event: PlayerSwapHandItemsEvent) {
         val player = event.player
         val uuid = player.uniqueId
         // TODO: Improve this
         val equipmentList = mutableListOf<Pair<EquipmentSlot, MutableMap<String, Any>>>()
 
         // Mainhand
-        equipmentList.add(
-            Pair.of(
-                EquipmentSlot.MAINHAND, player.inventory.itemInMainHand.serialize()
-            )
-        )
+        addEquipment(equipmentList, EquipmentSlot.MAINHAND, player.inventory.itemInMainHand)
         // Offhand
+        addEquipment(equipmentList, EquipmentSlot.OFFHAND, player.inventory.itemInOffHand)
+
+        JedisManager.instance.sendPacket(EquipmentPacket(uuid, equipmentList))
+    }
+
+    private fun addEquipment(
+        equipmentList: MutableList<Pair<EquipmentSlot, MutableMap<String, Any>>>,
+        equipmentSlot: EquipmentSlot,
+        itemStack: ItemStack
+    ) {
         equipmentList.add(
             Pair.of(
-                EquipmentSlot.OFFHAND, player.inventory.itemInOffHand.serialize()
+                equipmentSlot, itemStack.serialize()
             )
         )
-        JedisManager.instance.sendPacket(EquipmentPacket(uuid, equipmentList))
     }
 }

@@ -2,6 +2,7 @@ package dev.rishon.sync.handler
 
 import dev.rishon.sync.Sync
 import dev.rishon.sync.commands.SyncCommand
+import dev.rishon.sync.commands.TransferCommand
 import dev.rishon.sync.commands.WhereAmICommand
 import dev.rishon.sync.data.CacheData
 import dev.rishon.sync.data.IDataModule
@@ -60,11 +61,15 @@ class MainHandler(val instance: Sync) : IHandler {
         pm.registerEvents(AsyncChat(), instance)
         pm.registerEvents(WorldEvents(), instance)
         pm.registerEvents(AnimationEvent(), instance)
+        pm.registerEvents(EntityDamage(), instance)
     }
 
     private fun registerCommands() {
         instance.getCommand("sync")?.setExecutor(SyncCommand(this))
         instance.getCommand("whereami")?.setExecutor(WhereAmICommand(this))
+
+        instance.getCommand("transfer")?.setExecutor(TransferCommand(this))
+        instance.getCommand("transfer")?.tabCompleter = TransferCommand(this)
     }
 
     private fun loadTasks() {
@@ -75,7 +80,7 @@ class MainHandler(val instance: Sync) : IHandler {
         this.instance.server.onlinePlayers.forEach { player ->
             val uuid = player.uniqueId
             this.sqlData?.loadUser(uuid)
-            val playerData = this.redisData?.getPlayerDataAsync(uuid) ?: return
+            val playerData = this.redisData?.getPlayerData(uuid) ?: return
             redisData?.loadPlayerInfo(player, playerData)
             // Add player to online players
             JedisManager.instance.sendPacket(
@@ -90,7 +95,7 @@ class MainHandler(val instance: Sync) : IHandler {
         val redisData = this.redisData
         this.instance.server.onlinePlayers.forEach { player ->
             val uuid = player.uniqueId
-            val playerData = redisData?.getPlayerDataSync(uuid)
+            val playerData = redisData?.getPlayerData(uuid)
             if (playerData == null) {
                 player.sendMessage("Player data is null")
                 return

@@ -7,6 +7,7 @@ import dev.rishon.sync.jedis.JedisManager
 import dev.rishon.sync.utils.InventorySerialization
 import dev.rishon.sync.utils.LoggerUtil
 import dev.rishon.sync.utils.SchedulerUtil
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
@@ -40,12 +41,16 @@ class RedisData : IDataModule {
             this.jedisPoolConfig!!.maxTotal = 200
             this.jedisPoolConfig!!.maxIdle = 100
             this.jedisPoolConfig!!.minIdle = 50
+            this.jedisPoolConfig!!.testOnBorrow = true
+            this.jedisPoolConfig!!.testWhileIdle = true
 
             // FileHandler config
             val config = FileHandler.handler.config ?: throw RuntimeException("FileHandler config is null")
 
             this.jedisPool = JedisPool(
-                this.jedisPoolConfig, config.getString(path + "host"), Math.toIntExact(config.getLong(path + "port"))
+                this.jedisPoolConfig,
+                config.getString("${path}host"),
+                Math.toIntExact(config.getLong("${path}port"))
             )
 
             jedisPool!!.resource.ping()
@@ -54,7 +59,10 @@ class RedisData : IDataModule {
             // Cache Server Data
             val serverData = ServerData()
             serverData.instanceID = Sync.instance.instanceID
-            this.setServerDataAsync(serverData)
+            serverData.serverIP = Sync.instance.server.ip
+            serverData.serverPort = Sync.instance.server.port
+            this.setServerData(serverData)
+            Bukkit.broadcastMessage("Server data has been cached! ${serverData.toString()}")
 
             // Register API
             SyncAPI()
@@ -75,10 +83,7 @@ class RedisData : IDataModule {
                 do {
                     val scanResult = jedis.scan(cursor, scanParams)
                     val keys = scanResult.result
-                    for (key in keys) {
-                        println("Deleting key: $key")
-                        jedis.del(key)
-                    }
+                    for (key in keys) jedis.del(key)
                     cursor = scanResult.cursor
                 } while (cursor != "0")
             }
@@ -89,46 +94,58 @@ class RedisData : IDataModule {
     }
 
     // Cache Server Data
-    fun setServerDataAsync(serverData: ServerData) {
-        SchedulerUtil.runTaskSync {
-            jedisPool!!.resource.use { jedis ->
-                val json = serverData.toString()
-                jedis[serverIdentifier] = json
-            }
+    fun setServerData(serverData: ServerData) {
+        jedisPool!!.resource.use { jedis ->
+            val json = serverData.toString()
+            jedis[serverIdentifier] = json
         }
     }
 
-    fun getServerDataAsync(): ServerData {
-        val future: CompletableFuture<ServerData> = CompletableFuture.supplyAsync {
+    fun getServerData(): ServerData? {
+        jedisPool!!.resource.use { jedis ->
+            val json = jedis[serverIdentifier] ?: return ServerData()
+            return ServerData.fromJson(json)
+        }
+    }
+
+    fun getInstanceData(instanceID: String): ServerData? {
+        jedisPool!!.resource.use { jedis ->
+            val json = jedis["sync_server_$instanceID"] ?: return ServerData()
+            return ServerData.fromJson(json)
+        }
+    }
+
+    fun getInstancesNames(): List<String> {
+        val fileHandler = FileHandler.handler
+        val future: CompletableFuture<List<String>> = CompletableFuture.supplyAsync {
             jedisPool!!.resource.use { jedis ->
-                val json = jedis[serverIdentifier] ?: return@supplyAsync ServerData()
-                return@supplyAsync ServerData.fromJson(json)
+                val scanParams = ScanParams().match("sync_server_*")
+                var cursor = "0"
+                val instances = mutableListOf<String>()
+                do {
+                    val scanResult = jedis.scan(cursor, scanParams)
+                    val keys = scanResult.result
+                    for (key in keys) {
+                        val instanceID = key.replace("sync_server_", "")
+                        instances.add(fileHandler.instancePrefix?.replace("{id}", instanceID)!!)
+                    }
+                    cursor = scanResult.cursor
+                } while (cursor != "0")
+                return@supplyAsync instances
             }
         }
         return future.join()
     }
 
     // Cache Player Data
-    fun setPlayerDataAsync(uuid: UUID, playerData: PlayerData) {
-        SchedulerUtil.runTaskAsync {
-            jedisPool!!.resource.use { jedis ->
-                val json = playerData.toString()
-                jedis["$playerIdentifier$uuid"] = json
-            }
+    fun setPlayerData(uuid: UUID, playerData: PlayerData) {
+        jedisPool!!.resource.use { jedis ->
+            val json = playerData.toString()
+            jedis["$playerIdentifier$uuid"] = json
         }
     }
 
-    fun getPlayerDataAsync(uuid: UUID): PlayerData {
-        val future: CompletableFuture<PlayerData> = CompletableFuture.supplyAsync {
-            jedisPool!!.resource.use { jedis ->
-                val json = jedis["$playerIdentifier$uuid"] ?: return@supplyAsync null
-                return@supplyAsync PlayerData.fromJson(json)
-            }
-        }
-        return future.join()
-    }
-
-    fun getPlayerDataSync(uuid: UUID): PlayerData? {
+    fun getPlayerData(uuid: UUID): PlayerData? {
         jedisPool!!.resource.use { jedis ->
             val json = jedis["$playerIdentifier$uuid"] ?: return PlayerData()
             return PlayerData.fromJson(json)

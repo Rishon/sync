@@ -25,8 +25,8 @@ class DisconnectPacket(private val playerUUID: UUID) : IPacket {
         cacheData.fakePlayers.remove(playerUUID)
 
         // Remove player from online players
-        val serverData = RedisData.instance.getServerDataAsync()
+        val serverData = RedisData.instance.getServerData() ?: return
         serverData.onlinePlayers.remove(playerUUID)
-        RedisData.instance.setServerDataAsync(serverData)
+        RedisData.instance.setServerData(serverData)
     }
 }

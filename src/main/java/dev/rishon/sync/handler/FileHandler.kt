@@ -1,8 +1,12 @@
 package dev.rishon.sync.handler
 
 import dev.rishon.sync.Sync
+import net.minecraft.server.MinecraftServer
+import net.minecraft.server.dedicated.DedicatedServer
+import net.minecraft.server.dedicated.DedicatedServerSettings
 import org.bukkit.configuration.file.FileConfiguration
 import java.io.File
+
 
 class FileHandler(private var instance: Sync) : IHandler {
 
@@ -11,11 +15,14 @@ class FileHandler(private var instance: Sync) : IHandler {
 
     // Settings
     var instancePrefix: String? = null
+    var instanceFormat: String? = null
+    var transferPackets: Boolean = false
 
     override fun init() {
         handler = this;
         createConfig()
         loadConfigSettings()
+        handleTransferPackets()
     }
 
     override fun end() {}
@@ -28,8 +35,20 @@ class FileHandler(private var instance: Sync) : IHandler {
     }
 
     private fun loadConfigSettings() {
-        this.instancePrefix =
-            this.config?.getString("instance-prefix")?.replace("{id}", Sync.instance.instanceID)
+        this.instancePrefix = this.config?.getString("instance-prefix")
+        this.instanceFormat = this.instancePrefix?.replace("{id}", Sync.instance.instanceID)
+        this.transferPackets = this.config?.getBoolean("allow-transfer-packets") ?: false
+    }
+
+    private fun handleTransferPackets() {
+        if (this.transferPackets) {
+            // Allow transfer packets
+            val minecraftServer = MinecraftServer.getServer() as DedicatedServer
+            val settings: DedicatedServerSettings = minecraftServer.settings
+            settings.properties.properties.setProperty("accepts-transfers", "true")
+            settings.properties.acceptsTransfers = true
+            settings.forceSave()
+        }
     }
 
     companion object {

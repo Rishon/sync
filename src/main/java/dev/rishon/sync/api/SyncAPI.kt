@@ -11,22 +11,26 @@ class SyncAPI {
     }
 
     fun getOnlinePlayersCount(): Int {
-        val serverData = RedisData.instance.getServerDataAsync()
+        val serverData = RedisData.instance.getServerData() ?: return 0
         return serverData.onlinePlayers.size
     }
 
     fun getOnlinePlayers(): List<UUID>? {
-        val serverData = RedisData.instance.getServerDataAsync()
+        val serverData = RedisData.instance.getServerData() ?: return null
         return serverData.onlinePlayers.toList()
     }
 
     fun getInstanceID(): String? {
-        val serverData = RedisData.instance.getServerDataAsync()
+        val serverData = RedisData.instance.getServerData() ?: return null
         return serverData.instanceID
     }
 
+    fun getInstancesNames(): List<String>? {
+        return RedisData.instance.getInstancesNames()
+    }
+
     fun getFormattedInstanceID(): String? {
-        return FileHandler.handler.instancePrefix
+        return FileHandler.handler.instanceFormat
     }
 
     companion object {

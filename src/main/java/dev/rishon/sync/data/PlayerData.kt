@@ -47,7 +47,7 @@ class PlayerData {
 
     fun loadInventory(player: Player, redisData: RedisData) {
         // Load inventory
-        val playerData = redisData.getPlayerDataAsync(this.uuid!!)
+        val playerData = redisData.getPlayerData(this.uuid!!) ?: return
         val storedInventoryBase64 = playerData.inventory
         if (storedInventoryBase64.isEmpty()) return
         val storedInventory: Inventory = InventorySerialization.fromBase64(storedInventoryBase64, player)

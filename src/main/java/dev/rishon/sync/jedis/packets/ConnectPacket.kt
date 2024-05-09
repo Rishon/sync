@@ -55,10 +55,10 @@ class ConnectPacket(
         }
 
         // Add player to online players
-        val serverData = RedisData.instance.getServerDataAsync()
+        val serverData = RedisData.instance.getServerData() ?: return
         serverData.onlinePlayers.add(playerUUID)
 
-        RedisData.instance.setServerDataAsync(serverData)
+        RedisData.instance.setServerData(serverData)
     }
 
     private fun createFakePlayer(

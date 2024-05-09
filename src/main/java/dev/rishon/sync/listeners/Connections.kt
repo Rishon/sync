@@ -32,7 +32,7 @@ class Connections(private val handler: MainHandler) : Listener {
         val redisData = this.handler.redisData
 
         // Load player data
-        val playerData = this.handler.redisData?.getPlayerDataAsync(uuid)
+        val playerData = this.handler.redisData?.getPlayerData(uuid)
             ?: return player.kick(ColorUtil.translate("An error occurred while loading your data. Please try again."))
         redisData?.loadPlayerInfo(player, playerData)
 
@@ -49,7 +49,7 @@ class Connections(private val handler: MainHandler) : Listener {
         val player = event.player
         val uuid = player.uniqueId
         val redisData = this.handler.redisData
-        val playerData = redisData?.getPlayerDataAsync(uuid) ?: return
+        val playerData = redisData?.getPlayerData(uuid) ?: return
 
         // Save player data
         redisData.savePlayerInfo(player, playerData)

@@ -80,7 +80,7 @@ class SQLData(val handler: MainHandler) : IDataModule {
             if (exists) {
                 getPlayerDataAsync(uuid).thenAcceptAsync { playerData: PlayerData? ->
                     if (playerData != null) {
-                        redisData.setPlayerDataAsync(uuid, playerData)
+                        redisData.setPlayerData(uuid, playerData)
                     } else {
                         kickPlayer(uuid)
                     }
@@ -103,7 +103,7 @@ class SQLData(val handler: MainHandler) : IDataModule {
                             statement.setString(1, uuid.toString())
                             statement.setString(2, playerData.toString())
                             statement.executeUpdate()
-                            redisData.setPlayerDataAsync(uuid, playerData)
+                            redisData.setPlayerData(uuid, playerData)
                         }
                 }
             } catch (e: SQLException) {

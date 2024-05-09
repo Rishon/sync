@@ -1,5 +1,7 @@
 instance-prefix: "main-{id}"
 
+allow-transfer-packets: true
+
 redis:
   host: "127.0.0.1"
   port: 6379

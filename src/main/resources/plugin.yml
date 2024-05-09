@@ -3,6 +3,7 @@ version: '${version}'
 main: dev.rishon.sync.Sync
 api-version: '1.20'
 prefix: Sync
+load: STARTUP
 folia-supported: true
 authors: [ Rishon ]
 description: sync players between instances
@@ -12,3 +13,5 @@ commands:
     permission: sync.command.use
   whereami:
     permission: sync.command.whereami
+  transfer:
+    permission: sync.command.transfer
