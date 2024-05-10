@@ -21,6 +21,7 @@ Drag the jar from ``build/libs`` into all of your instances.
 
 ### Done:
 
+- ✅ Transfer command between instances using transfer packets
 - ✅ Add fake player on connect
 - ✅ Remove fake player on disconnect
 - ✅ Sync player movement (walk, jump, sneak, sprint)
@@ -45,9 +46,13 @@ Drag the jar from ``build/libs`` into all of your instances.
 
 - 🟧 API in progress
 - 🟧 Sync player equipment
+- 🟧 Sync player damage hit
 
 ### To Do:
 
-- ❌ Sync player damage hit
+- ❌ Fix player connection desync
+- ❌ Fix player disconnection desync
+- ❌ Optimize packet handling
+- ❌ Fix redis cache not being deleted upon instance shutdown
 
 #### ⚠️ Probably not going to do any world related stuff (blocks, entities, etc...)

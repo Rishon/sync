@@ -48,7 +48,7 @@ class TransferCommand(val handler: MainHandler) : CommandExecutor, TabExecutor {
             }
 
             val instance: String = args!![0]
-            if (instance == this.handler.instance.instanceID) {
+            if (instance == FileHandler.handler.instanceFormat) {
                 player.sendMessage(
                     ColorUtil.translate(
                         "You cannot transfer yourself to the same instance!", Colors.ERROR
@@ -74,10 +74,8 @@ class TransferCommand(val handler: MainHandler) : CommandExecutor, TabExecutor {
     }
 
     private fun transferPlayer(player: Player, instance: String) {
-        val fileHandler = FileHandler.handler
         // Transfer player
-        val getID = instance.replace(fileHandler.instancePrefix!!.replace("{id}", ""), "")
-        val serverData = this.handler.redisData?.getInstanceData(getID)
+        val serverData = this.handler.redisData?.getInstanceDataByName(instance)
         if (serverData == null) {
             player.sendMessage(ColorUtil.translate("Instance not found!", Colors.ERROR))
             return

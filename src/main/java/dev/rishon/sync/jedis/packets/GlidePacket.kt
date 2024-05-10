@@ -14,11 +14,11 @@ class GlidePacket(private val playerUUID: UUID, private val isGliding: Boolean) 
         val server = Bukkit.getServer()
         val onlinePlayers = server.onlinePlayers
         val cacheData = CacheData.instance
-        val fakePlayer = cacheData.fakePlayers[playerUUID]
+        val fakePlayer = cacheData.fakePlayers[playerUUID] ?: return
 
         onlinePlayers.forEach { player ->
             if (player.uniqueId == playerUUID) return@forEach
-            ClientGlidePlayerPacket.sendPacket(player, fakePlayer!!, isGliding)
+            ClientGlidePlayerPacket.sendPacket(player, fakePlayer.second, isGliding)
         }
     }
 }

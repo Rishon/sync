@@ -14,11 +14,11 @@ class SneakPacket(private val playerUUID: UUID, private val isSneaking: Boolean)
         val server = Bukkit.getServer()
         val onlinePlayers = server.onlinePlayers
         val cacheData = CacheData.instance
-        val fakePlayer = cacheData.fakePlayers[playerUUID]
+        val fakePlayer = cacheData.fakePlayers[playerUUID] ?: return
 
         onlinePlayers.forEach { player ->
             if (player.uniqueId == playerUUID) return@forEach
-            ClientSneakPlayerPacket.sendPacket(player, fakePlayer!!, isSneaking)
+            ClientSneakPlayerPacket.sendPacket(player, fakePlayer.second, isSneaking)
         }
     }
 }

@@ -14,6 +14,9 @@ class ServerData {
     @JsonProperty("instanceID")
     var instanceID: String? = null
 
+    @JsonProperty("instanceFormatted")
+    var instanceFormatted: String? = null
+
     @JsonProperty("ip")
     var serverIP: String? = null
 

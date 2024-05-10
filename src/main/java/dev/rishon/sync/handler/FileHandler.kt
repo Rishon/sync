@@ -32,6 +32,8 @@ class FileHandler(private var instance: Sync) : IHandler {
         if (!file.exists()) this.instance.saveResource("config.yml", false)
         this.instance.saveDefaultConfig();
         this.config = this.instance.config
+        this.config?.options()?.copyDefaults(true)
+        this.instance.saveConfig()
     }
 
     private fun loadConfigSettings() {

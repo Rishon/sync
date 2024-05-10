@@ -1,15 +1,15 @@
 package dev.rishon.sync.jedis.packets
 
 import dev.rishon.sync.data.CacheData
-import dev.rishon.sync.nms.ClientSwimPlayerPacket
 import dev.rishon.sync.utils.LoggerUtil
 import org.bukkit.Bukkit
 import java.util.*
 
-class SwimPacket(private val playerUUID: UUID, private val isSwimming: Boolean) : IPacket {
+class DamagePacket(private val playerUUID: UUID, private val damage: Double, private val criticalHit: Boolean) :
+    IPacket {
 
     override fun onReceive() {
-        LoggerUtil.info("Received swim packet for $playerUUID")
+        LoggerUtil.info("Received damage packet for $playerUUID")
 
         val server = Bukkit.getServer()
         val onlinePlayers = server.onlinePlayers
@@ -17,8 +17,7 @@ class SwimPacket(private val playerUUID: UUID, private val isSwimming: Boolean) 
         val fakePlayer = cacheData.fakePlayers[playerUUID] ?: return
 
         onlinePlayers.forEach { player ->
-            if (player.uniqueId == playerUUID) return@forEach
-            ClientSwimPlayerPacket.sendPacket(player, fakePlayer.second, isSwimming)
+            player.damage(damage)
         }
     }
 }

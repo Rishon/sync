@@ -61,7 +61,7 @@ class MainHandler(val instance: Sync) : IHandler {
         pm.registerEvents(AsyncChat(), instance)
         pm.registerEvents(WorldEvents(), instance)
         pm.registerEvents(AnimationEvent(), instance)
-        pm.registerEvents(EntityDamage(), instance)
+        pm.registerEvents(EntityDamage(this), instance)
     }
 
     private fun registerCommands() {

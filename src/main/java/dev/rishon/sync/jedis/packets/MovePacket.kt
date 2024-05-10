@@ -18,7 +18,7 @@ class MovePacket(
 
         onlinePlayers.forEach { player ->
             if (player.uniqueId == playerUUID) return@forEach
-            ClientPlayerMovePacket.sendPacket(player, fakePlayer, location)
+            ClientPlayerMovePacket.sendPacket(player, fakePlayer.second, location)
         }
     }
 }

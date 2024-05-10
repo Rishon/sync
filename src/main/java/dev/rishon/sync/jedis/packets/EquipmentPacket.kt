@@ -20,11 +20,11 @@ class EquipmentPacket(
         val server = Bukkit.getServer()
         val onlinePlayers = server.onlinePlayers
         val cacheData = CacheData.instance
-        val fakePlayer = cacheData.fakePlayers[playerUUID]
+        val fakePlayer = cacheData.fakePlayers[playerUUID] ?: return
 
         onlinePlayers.forEach { player ->
             if (player.uniqueId == playerUUID) return@forEach
-            ClientEquipmentPlayerPacket.sendPacket(player, fakePlayer!!, equipmentList)
+            ClientEquipmentPlayerPacket.sendPacket(player, fakePlayer.second, equipmentList)
         }
     }
 }

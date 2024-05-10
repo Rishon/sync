@@ -7,7 +7,6 @@ import dev.rishon.sync.jedis.JedisManager
 import dev.rishon.sync.utils.InventorySerialization
 import dev.rishon.sync.utils.LoggerUtil
 import dev.rishon.sync.utils.SchedulerUtil
-import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
@@ -41,8 +40,6 @@ class RedisData : IDataModule {
             this.jedisPoolConfig!!.maxTotal = 200
             this.jedisPoolConfig!!.maxIdle = 100
             this.jedisPoolConfig!!.minIdle = 50
-            this.jedisPoolConfig!!.testOnBorrow = true
-            this.jedisPoolConfig!!.testWhileIdle = true
 
             // FileHandler config
             val config = FileHandler.handler.config ?: throw RuntimeException("FileHandler config is null")
@@ -59,10 +56,10 @@ class RedisData : IDataModule {
             // Cache Server Data
             val serverData = ServerData()
             serverData.instanceID = Sync.instance.instanceID
+            serverData.instanceFormatted = FileHandler.handler.instanceFormat
             serverData.serverIP = Sync.instance.server.ip
             serverData.serverPort = Sync.instance.server.port
             this.setServerData(serverData)
-            Bukkit.broadcastMessage("Server data has been cached! ${serverData.toString()}")
 
             // Register API
             SyncAPI()
@@ -115,8 +112,25 @@ class RedisData : IDataModule {
         }
     }
 
+    fun getInstanceDataByName(instanceFormatted: String): ServerData? {
+        jedisPool!!.resource.use { jedis ->
+            val scanParams = ScanParams().match("sync_server_*")
+            var cursor = "0"
+            do {
+                val scanResult = jedis.scan(cursor, scanParams)
+                val keys = scanResult.result
+                for (key in keys) {
+                    val instanceID = key.replace("sync_server_", "")
+                    val serverData = getInstanceData(instanceID) ?: continue
+                    if (serverData.instanceFormatted == instanceFormatted) return serverData
+                }
+                cursor = scanResult.cursor
+            } while (cursor != "0")
+        }
+        return null
+    }
+
     fun getInstancesNames(): List<String> {
-        val fileHandler = FileHandler.handler
         val future: CompletableFuture<List<String>> = CompletableFuture.supplyAsync {
             jedisPool!!.resource.use { jedis ->
                 val scanParams = ScanParams().match("sync_server_*")
@@ -127,7 +141,8 @@ class RedisData : IDataModule {
                     val keys = scanResult.result
                     for (key in keys) {
                         val instanceID = key.replace("sync_server_", "")
-                        instances.add(fileHandler.instancePrefix?.replace("{id}", instanceID)!!)
+                        val serverData = getInstanceData(instanceID) ?: continue
+                        instances.add(serverData.instanceFormatted ?: instanceID)
                     }
                     cursor = scanResult.cursor
                 } while (cursor != "0")

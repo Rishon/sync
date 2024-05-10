@@ -15,11 +15,11 @@ class AnimationPacket(private val playerUUID: UUID, private val animation: Anima
         val server = Bukkit.getServer()
         val onlinePlayers = server.onlinePlayers
         val cacheData = CacheData.instance
-        val fakePlayer = cacheData.fakePlayers[playerUUID]
+        val fakePlayer = cacheData.fakePlayers[playerUUID] ?: return
 
         onlinePlayers.forEach { player ->
             if (player.uniqueId == playerUUID) return@forEach
-            ClientAnimatePlayerPacket.sendPacket(player, fakePlayer!!, animation)
+            ClientAnimatePlayerPacket.sendPacket(player, fakePlayer.second, animation)
         }
     }
 }

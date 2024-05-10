@@ -36,15 +36,15 @@ class ConnectPacket(
         cacheData.fakePlayers.forEach { (uuid, fakePlayer) ->
             if (uuid.toString() == playerUUID.toString()) return@forEach
             val joinedPlayer = server.getPlayer(playerUUID) ?: return@forEach
-            val fakePlayerLocation = fakePlayer.bukkitEntity.location.serialize()
-            val fakePlayerName = fakePlayer.gameProfile.name
+            val fakePlayerLocation = fakePlayer.second.bukkitEntity.location.serialize()
+            val fakePlayerName = fakePlayer.second.gameProfile.name
             createFakePlayer(
                 joinedPlayer,
                 server,
                 Location.deserialize(fakePlayerLocation),
                 fakePlayerName,
                 uuid,
-                Utils.getFakePlayerSkin(fakePlayer)
+                Utils.getFakePlayerSkin(fakePlayer.second)
             )
         }
 
@@ -81,6 +81,6 @@ class ConnectPacket(
 
         // Add to local cacheData
         val cacheData = CacheData.instance
-        cacheData.fakePlayers[playerUUID] = fakePlayer
+        cacheData.fakePlayers[playerUUID] = Pair(fakePlayer.id, fakePlayer)
     }
 }
