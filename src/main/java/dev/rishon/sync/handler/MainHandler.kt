@@ -96,10 +96,7 @@ class MainHandler(val instance: Sync) : IHandler {
         this.instance.server.onlinePlayers.forEach { player ->
             val uuid = player.uniqueId
             val playerData = redisData?.getPlayerData(uuid)
-            if (playerData == null) {
-                player.sendMessage("Player data is null")
-                return
-            }
+            if (playerData == null) return@forEach
 
             // Disconnect player
             JedisManager.instance.sendPacket(DisconnectPacket(uuid))

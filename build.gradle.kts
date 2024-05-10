@@ -42,16 +42,6 @@ tasks.shadowJar {
     archiveBaseName.set("sync")
     archiveClassifier.set("")
     mergeServiceFiles()
-
-    // TODO: Remove this when the plugin is ready for production
-    destinationDirectory = file("C:\\Users\\i9\\Downloads\\server\\server1\\plugins")
-    // Copy the jar to another directory
-    doLast {
-        copy {
-            from(archiveFile)
-            into(file("C:\\Users\\i9\\Downloads\\server\\server2\\plugins"))
-        }
-    }
 }
 
 tasks.processResources {

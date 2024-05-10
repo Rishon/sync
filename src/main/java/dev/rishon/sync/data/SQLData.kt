@@ -19,10 +19,9 @@ class SQLData(val handler: MainHandler) : IDataModule {
     // Hikari Config
     private val hikariConfig = HikariConfig()
     private var hikariDataSource: HikariDataSource? = null
-    private var connection: Connection? = null
 
     // Tables
-    private val PLAYERS_TABLE = "sync_players"
+    private val playersTable = "sync_players"
 
     override fun init() {
         val config: FileConfiguration? = FileHandler.handler.config
@@ -41,22 +40,14 @@ class SQLData(val handler: MainHandler) : IDataModule {
         this.hikariConfig.connectionTimeout = 30000
 
         this.hikariDataSource = HikariDataSource(hikariConfig)
-        this.connection = hikariDataSource?.connection
 
         createTables(database)
     }
 
     override fun end() {
         try {
-            this.connection?.close()
-            if (this.hikariDataSource != null) {
-                this.hikariDataSource?.close()
-                println("Data source closed successfully.")
-            } else {
-                println("Data source was already null.")
-            }
+            if (this.hikariDataSource != null) this.hikariDataSource?.close()
         } catch (e: SQLException) {
-            println("Error occurred while closing connection: ${e.message}")
             e.printStackTrace()
         }
     }
@@ -66,7 +57,7 @@ class SQLData(val handler: MainHandler) : IDataModule {
         try {
             getConnection().use { connection ->
                 val statement = connection.createStatement()
-                statement.executeUpdate("CREATE TABLE IF NOT EXISTS $PLAYERS_TABLE (uuid VARCHAR(36) NOT NULL, `json` MEDIUMTEXT, PRIMARY KEY (uuid))")
+                statement.executeUpdate("CREATE TABLE IF NOT EXISTS $playersTable (uuid VARCHAR(36) NOT NULL, `json` MEDIUMTEXT, PRIMARY KEY (uuid))")
                 statement.executeUpdate("ALTER DATABASE $database CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
             }
         } catch (e: SQLException) {
@@ -98,7 +89,7 @@ class SQLData(val handler: MainHandler) : IDataModule {
             playerData = playerData.apply { this.uuid = uuid }
             try {
                 getConnection().use { connection ->
-                    connection.prepareStatement("INSERT INTO $PLAYERS_TABLE (UUID, JSON) VALUES (?, ?)")
+                    connection.prepareStatement("INSERT INTO $playersTable (UUID, JSON) VALUES (?, ?)")
                         .use { statement ->
                             statement.setString(1, uuid.toString())
                             statement.setString(2, playerData.toString())
@@ -115,7 +106,7 @@ class SQLData(val handler: MainHandler) : IDataModule {
     private fun doesUserExistInDatabaseAsync(uuid: UUID): CompletableFuture<Boolean> {
         try {
             getConnection().use { connection ->
-                connection.prepareStatement("SELECT UUID FROM $PLAYERS_TABLE WHERE UUID=?").use { statement ->
+                connection.prepareStatement("SELECT UUID FROM $playersTable WHERE UUID=?").use { statement ->
                     statement.setString(1, uuid.toString())
                     statement.executeQuery().use { resultSet ->
                         return CompletableFuture.completedFuture(resultSet.next())
@@ -132,7 +123,7 @@ class SQLData(val handler: MainHandler) : IDataModule {
         return CompletableFuture.supplyAsync {
             try {
                 getConnection().use { connection ->
-                    connection.prepareStatement("SELECT JSON FROM $PLAYERS_TABLE WHERE UUID=?").use { statement ->
+                    connection.prepareStatement("SELECT JSON FROM $playersTable WHERE UUID=?").use { statement ->
                         statement.setString(1, uuid.toString())
                         statement.executeQuery().use { resultSet ->
                             if (!resultSet.next()) return@supplyAsync null
@@ -150,11 +141,11 @@ class SQLData(val handler: MainHandler) : IDataModule {
     fun saveUser(uuid: UUID, playerData: PlayerData) {
         try {
             getConnection().use { connection ->
-                connection.prepareStatement("SELECT * FROM $PLAYERS_TABLE WHERE UUID='$uuid';").executeQuery()
+                connection.prepareStatement("SELECT * FROM $playersTable WHERE UUID='$uuid';").executeQuery()
                     .use { resultSet ->
                         if (resultSet.next()) {
                             connection.createStatement()
-                                .executeUpdate("UPDATE $PLAYERS_TABLE SET JSON='$playerData' WHERE UUID='$uuid';")
+                                .executeUpdate("UPDATE $playersTable SET JSON='$playerData' WHERE UUID='$uuid';")
                         }
                     }
             }
@@ -172,8 +163,7 @@ class SQLData(val handler: MainHandler) : IDataModule {
 
     // Get connection
     private fun getConnection(): Connection {
-        return if (connection != null && connection?.isClosed == false) connection!!
-        else if (hikariDataSource != null) hikariDataSource?.connection!!
-        else throw RuntimeException("Connection is null")
+        return hikariDataSource!!.connection
     }
+
 }
