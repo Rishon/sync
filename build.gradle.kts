@@ -1,6 +1,6 @@
 plugins {
     java
-    id("io.papermc.paperweight.userdev") version "1.6.0"
+    id("io.papermc.paperweight.userdev") version "1.7.1"
     id("org.jetbrains.kotlin.jvm")
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }

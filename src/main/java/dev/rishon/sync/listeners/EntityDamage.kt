@@ -24,11 +24,11 @@ class EntityDamage(private val handler: MainHandler) : Listener {
         if (collection.any { it.first == entityID }) {
             val fakePlayer = collection.first { it.first == entityID }.second
             val livingEntity = damager as LivingEntity
-            var damage = 1.0
+            var damage = 2.0
             val isCriticalHit = (damager.fallDistance > 0 && !livingEntity.isOnGround)
             if (isCriticalHit) damage *= 1.5
             damager.sendMessage("You have punched ${fakePlayer.name} with damage $damage")
-            JedisManager.instance.sendPacket(DamagePacket(damager.uniqueId, damage, isCriticalHit))
+            JedisManager.instance.sendPacket(DamagePacket(damager.uniqueId, fakePlayer.uuid, damage, isCriticalHit))
         }
     }
 

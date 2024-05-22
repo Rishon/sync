@@ -6,7 +6,6 @@ import dev.rishon.sync.handler.FileHandler
 import dev.rishon.sync.jedis.JedisManager
 import dev.rishon.sync.utils.InventorySerialization
 import dev.rishon.sync.utils.LoggerUtil
-import dev.rishon.sync.utils.SchedulerUtil
 import org.bukkit.Location
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
@@ -45,9 +44,7 @@ class RedisData : IDataModule {
             val config = FileHandler.handler.config ?: throw RuntimeException("FileHandler config is null")
 
             this.jedisPool = JedisPool(
-                this.jedisPoolConfig,
-                config.getString("${path}host"),
-                Math.toIntExact(config.getLong("${path}port"))
+                this.jedisPoolConfig, config.getString("${path}host"), Math.toIntExact(config.getLong("${path}port"))
             )
 
             jedisPool!!.resource.ping()
@@ -105,7 +102,7 @@ class RedisData : IDataModule {
         }
     }
 
-    fun getInstanceData(instanceID: String): ServerData? {
+    private fun getInstanceData(instanceID: String): ServerData? {
         jedisPool!!.resource.use { jedis ->
             val json = jedis["sync_server_$instanceID"] ?: return ServerData()
             return ServerData.fromJson(json)
@@ -162,37 +159,34 @@ class RedisData : IDataModule {
 
     fun getPlayerData(uuid: UUID): PlayerData? {
         jedisPool!!.resource.use { jedis ->
-            val json = jedis["$playerIdentifier$uuid"] ?: return PlayerData()
+            val json = jedis["$playerIdentifier$uuid"] ?: return null
             return PlayerData.fromJson(json)
         }
     }
 
-    fun removePlayerDataAsync(uuid: UUID) {
-        SchedulerUtil.runTaskAsync {
-            jedisPool!!.resource.use { jedis ->
-                jedis.del("$playerIdentifier$uuid")
-            }
+    fun removePlayerData(uuid: UUID) {
+        jedisPool!!.resource.use { jedis ->
+            jedis.del("$playerIdentifier$uuid")
         }
     }
 
-    fun doesPlayerExistAsync(uuid: UUID): Boolean {
-        val future = CompletableFuture.supplyAsync {
-            jedisPool!!.resource.use { jedis ->
-                return@supplyAsync jedis.exists("$playerIdentifier$uuid")
-            }
+    fun doesPlayerExist(uuid: UUID): Boolean {
+        jedisPool!!.resource.use { jedis ->
+            return jedis.exists("$playerIdentifier$uuid")
         }
-        return future.join()
     }
 
     fun loadPlayerInfo(player: Player, playerData: PlayerData) {
         // Load player inventory
-        playerData.loadInventory(player, this)
+        playerData.loadInventory(player, playerData)
         // Load player location
         val locationMap = playerData.location
         if (locationMap.isNotEmpty()) {
             val location = Location.deserialize(playerData.location)
             player.teleportAsync(location)
         }
+        // Set instance ID
+        playerData.instanceID = Sync.instance.instanceID
         // Load player exp points
         player.exp = playerData.expPoints
         // Load player exp level

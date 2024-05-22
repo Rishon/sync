@@ -55,6 +55,9 @@ class Connections(private val handler: MainHandler) : Listener {
         redisData.savePlayerInfo(player, playerData)
         SchedulerUtil.runTaskAsync { this.handler.sqlData?.saveUser(uuid, playerData) }
 
+        // Remove player data from cache
+        redisData.removePlayerData(uuid)
+
         // Remove player from online players
         JedisManager.instance.sendPacket(DisconnectPacket(uuid))
     }

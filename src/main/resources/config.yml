@@ -1,6 +1,7 @@
 instance-prefix: "main-{id}"
 
-allow-transfer-packets: true
+is-under-proxy: false # Set to true if you are running the server under a proxy
+allow-transfer-packets: false # If under a proxy, set 'is-under-proxy' to true and set this to true
 
 redis:
   host: "127.0.0.1"

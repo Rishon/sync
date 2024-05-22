@@ -24,6 +24,9 @@ class MainHandler(val instance: Sync) : IHandler {
     var redisData: RedisData? = null
     var cacheData: CacheData? = null
 
+    // Tasks
+    private var instanceTask: InstanceTask? = null
+
     override fun init() {
         handler = this
         // Register dataModules
@@ -73,7 +76,8 @@ class MainHandler(val instance: Sync) : IHandler {
     }
 
     private fun loadTasks() {
-        SchedulerUtil.runTaskTimerAsync(InstanceTask(this), 20)
+        this.instanceTask = InstanceTask(this)
+        SchedulerUtil.runTaskTimerAsync({ this.instanceTask!!.run() }, 20)
     }
 
     private fun loadOnlinePlayers() {

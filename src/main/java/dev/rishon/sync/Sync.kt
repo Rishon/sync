@@ -16,15 +16,18 @@ class Sync : JavaPlugin() {
     // Instance ID
     val instanceID: String = UUID.randomUUID().toString().slice(0..4)
 
+    // isFolia?
+    val isFolia: Boolean = FoliaSupport.isFolia()
+
     override fun onEnable() {
         instance = this
 
         // Has Folia?
-        if (FoliaSupport.isFolia()) {
-            this.logger.info("Folia detected! Disabling ${this.name}...")
-            server.pluginManager.disablePlugin(this)
-            return
-        }
+        if (isFolia) this.logger.info("Folia detected! Still experimental!")
+
+        // Register plugin channel
+        server.messenger.registerOutgoingPluginChannel(this, "BungeeCord")
+        server.messenger.registerOutgoingPluginChannel(this, "sync:toproxy")
 
         // Register handlers
         this.handlers.add(FileHandler(this))

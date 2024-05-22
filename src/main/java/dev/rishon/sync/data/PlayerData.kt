@@ -18,6 +18,9 @@ class PlayerData {
     @JsonProperty("uuid")
     var uuid: UUID? = null
 
+    @JsonProperty("instanceID")
+    var instanceID: String? = ""
+
     @JsonProperty("inventory_base64")
     var inventory: String = ""
 
@@ -45,9 +48,8 @@ class PlayerData {
     @JsonProperty("player_effects")
     var potionEffects: List<MutableMap<String, Any>> = mutableListOf()
 
-    fun loadInventory(player: Player, redisData: RedisData) {
+    fun loadInventory(player: Player, playerData: PlayerData) {
         // Load inventory
-        val playerData = redisData.getPlayerData(this.uuid!!) ?: return
         val storedInventoryBase64 = playerData.inventory
         if (storedInventoryBase64.isEmpty()) return
         val storedInventory: Inventory = InventorySerialization.fromBase64(storedInventoryBase64, player)
