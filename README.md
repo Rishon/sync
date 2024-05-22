@@ -42,9 +42,8 @@ Drag the jar from ``build/libs`` into all of your instances.
 - ✅ Sync player potion effects
 - ✅ Sync swimming animation
 - ✅ Sync glide animation
-- ✅ Fix player connection desync
-- ✅ Fix player disconnection desync
-- 
+-
+
 ### In Progress:
 
 - 🟧 API in progress
@@ -54,6 +53,5 @@ Drag the jar from ``build/libs`` into all of your instances.
 ### To Do:
 
 - ❌ Optimize packet handling
-- ❌ Fix redis cache not being deleted upon instance shutdown
 
 #### ⚠️ Probably not going to do any world related stuff (blocks, entities, etc...)

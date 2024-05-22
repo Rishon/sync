@@ -1,15 +1,14 @@
 package dev.rishon.sync.listeners
 
+import dev.rishon.sync.api.SyncAPI
 import dev.rishon.sync.enums.Colors
 import dev.rishon.sync.handler.MainHandler
 import dev.rishon.sync.jedis.JedisManager
 import dev.rishon.sync.jedis.packets.ConnectPacket
 import dev.rishon.sync.jedis.packets.DisconnectPacket
-import dev.rishon.sync.jedis.packets.MessagePacket
 import dev.rishon.sync.utils.ColorUtil
 import dev.rishon.sync.utils.SchedulerUtil
 import dev.rishon.sync.utils.Utils
-import net.kyori.adventure.text.serializer.json.JSONComponentSerializer
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -49,12 +48,7 @@ class Connections(private val handler: MainHandler) : Listener {
         )
 
         // Broadcast join message
-        JedisManager.instance.sendPacket(
-            MessagePacket(
-                JSONComponentSerializer.json()
-                    .serialize(ColorUtil.translate("${player.name} has joined the server!", Colors.INFO)), ""
-            )
-        )
+        SyncAPI.getAPI().broadcastMessage(ColorUtil.translate("${player.name} has joined the server!", Colors.INFO))
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -82,12 +76,7 @@ class Connections(private val handler: MainHandler) : Listener {
         JedisManager.instance.sendPacket(DisconnectPacket(uuid))
 
         // Broadcast quit message
-        JedisManager.instance.sendPacket(
-            MessagePacket(
-                JSONComponentSerializer.json()
-                    .serialize(ColorUtil.translate("${player.name} has left the server!", Colors.NEGATIVE)), ""
-            )
-        )
+        SyncAPI.getAPI().broadcastMessage(ColorUtil.translate("${player.name} has left the server!", Colors.NEGATIVE))
     }
 
 }
