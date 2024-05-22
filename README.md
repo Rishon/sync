@@ -42,7 +42,6 @@ Drag the jar from ``build/libs`` into all of your instances.
 - ✅ Sync player potion effects
 - ✅ Sync swimming animation
 - ✅ Sync glide animation
--
 
 ### In Progress:
 
