@@ -10,7 +10,7 @@ import java.util.*
 class DisconnectPacket(private val playerUUID: UUID) : IPacket {
 
     override fun onReceive() {
-        LoggerUtil.info("Received packet for $playerUUID")
+        LoggerUtil.info("Received disconnect packet for $playerUUID")
         val server = Bukkit.getServer()
         val onlinePlayers = server.onlinePlayers
         val cacheData = CacheData.instance
@@ -18,7 +18,7 @@ class DisconnectPacket(private val playerUUID: UUID) : IPacket {
 
         onlinePlayers.forEach { player ->
             if (playerUUID == player.uniqueId) return@forEach
-            ClientRemovePlayerPacket.sendPacket(player, fakePlayer.second.id)
+            ClientRemovePlayerPacket.sendPacket(player, fakePlayer.second.uuid, fakePlayer.second.id)
         }
 
         // Remove player from local cache

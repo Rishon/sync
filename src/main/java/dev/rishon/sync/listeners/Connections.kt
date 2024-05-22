@@ -1,12 +1,15 @@
 package dev.rishon.sync.listeners
 
+import dev.rishon.sync.enums.Colors
 import dev.rishon.sync.handler.MainHandler
 import dev.rishon.sync.jedis.JedisManager
 import dev.rishon.sync.jedis.packets.ConnectPacket
 import dev.rishon.sync.jedis.packets.DisconnectPacket
+import dev.rishon.sync.jedis.packets.MessagePacket
 import dev.rishon.sync.utils.ColorUtil
 import dev.rishon.sync.utils.SchedulerUtil
 import dev.rishon.sync.utils.Utils
+import net.kyori.adventure.text.serializer.json.JSONComponentSerializer
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -27,6 +30,8 @@ class Connections(private val handler: MainHandler) : Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     private fun onPlayerJoin(event: PlayerJoinEvent) {
+        event.joinMessage(null)
+
         val player = event.player
         val uuid = player.uniqueId
         val redisData = this.handler.redisData
@@ -42,10 +47,20 @@ class Connections(private val handler: MainHandler) : Listener {
                 playerData.location, player.name, uuid, Utils.getSkin(player)
             )
         )
+
+        // Broadcast join message
+        JedisManager.instance.sendPacket(
+            MessagePacket(
+                JSONComponentSerializer.json()
+                    .serialize(ColorUtil.translate("${player.name} has joined the server!", Colors.INFO)), ""
+            )
+        )
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     private fun onPlayerDisconnect(event: PlayerQuitEvent) {
+        event.quitMessage(null)
+
         val player = event.player
         val uuid = player.uniqueId
         val redisData = this.handler.redisData
@@ -53,13 +68,26 @@ class Connections(private val handler: MainHandler) : Listener {
 
         // Save player data
         redisData.savePlayerInfo(player, playerData)
-        SchedulerUtil.runTaskAsync { this.handler.sqlData?.saveUser(uuid, playerData) }
+
+        if (player.server.isStopping) {
+            SchedulerUtil.runTaskSync { this.handler.sqlData?.saveUser(uuid, playerData) }
+        } else {
+            SchedulerUtil.runTaskAsync { this.handler.sqlData?.saveUser(uuid, playerData) }
+        }
 
         // Remove player data from cache
         redisData.removePlayerData(uuid)
 
         // Remove player from online players
         JedisManager.instance.sendPacket(DisconnectPacket(uuid))
+
+        // Broadcast quit message
+        JedisManager.instance.sendPacket(
+            MessagePacket(
+                JSONComponentSerializer.json()
+                    .serialize(ColorUtil.translate("${player.name} has left the server!", Colors.NEGATIVE)), ""
+            )
+        )
     }
 
 }

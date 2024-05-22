@@ -25,6 +25,12 @@ object SchedulerUtil {
     val regionScheduler: FoliaGlobalRegionScheduler = FoliaGlobalRegionScheduler()
 
     @JvmStatic
+    fun cancelAllTasks() {
+        asyncScheduler.cancelTasks(Sync.instance)
+        regionScheduler.cancelTasks(Sync.instance)
+    }
+
+    @JvmStatic
     fun runTaskAsync(runnable: Consumer<Any?>) {
         if (INSTANCE.isFolia) {
             asyncScheduler.runNow(INSTANCE) { t: ScheduledTask? -> runnable.accept(t) }

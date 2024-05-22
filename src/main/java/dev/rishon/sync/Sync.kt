@@ -39,8 +39,7 @@ class Sync : JavaPlugin() {
 
     override fun onDisable() {
         this.handlers.forEach { it.end() }
-        SchedulerUtil.scheduler.cancelTasks(this)
-        this.server.scheduler.cancelTasks(this)
+        SchedulerUtil.cancelAllTasks()
         this.logger.info("${this.name} has been disabled!")
     }
 

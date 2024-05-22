@@ -21,6 +21,7 @@ Drag the jar from ``build/libs`` into all of your instances.
 
 ### Done:
 
+- ✅ Folia support
 - ✅ Transfer command between instances using transfer packets
 - ✅ Add fake player on connect
 - ✅ Remove fake player on disconnect
@@ -41,7 +42,9 @@ Drag the jar from ``build/libs`` into all of your instances.
 - ✅ Sync player potion effects
 - ✅ Sync swimming animation
 - ✅ Sync glide animation
-
+- ✅ Fix player connection desync
+- ✅ Fix player disconnection desync
+- 
 ### In Progress:
 
 - 🟧 API in progress
@@ -50,8 +53,6 @@ Drag the jar from ``build/libs`` into all of your instances.
 
 ### To Do:
 
-- ❌ Fix player connection desync
-- ❌ Fix player disconnection desync
 - ❌ Optimize packet handling
 - ❌ Fix redis cache not being deleted upon instance shutdown
 
