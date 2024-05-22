@@ -36,11 +36,6 @@ class ConnectPacket(
         // Create fake player for the joining player
         createFakePlayer(null, server, deserializedLocation, playerName, playerUUID, skin)
 
-        // Inform existing online players of the new player
-        onlinePlayers.forEach { player ->
-            createFakePlayer(player, server, deserializedLocation, playerName, playerUUID, skin)
-        }
-
         // Inform the new player of existing fake players
         val joinedPlayer = server.getPlayer(playerUUID)
         if (joinedPlayer != null) {
@@ -51,6 +46,11 @@ class ConnectPacket(
                     val fakePlayerSkin = Utils.getFakePlayerSkin(fakePlayer.second)
                     createFakePlayer(joinedPlayer, server, fakePlayerLocation, fakePlayerName, uuid, fakePlayerSkin)
                 }
+            }
+        } else {
+            // Inform existing online players of the new player
+            onlinePlayers.forEach { player ->
+                createFakePlayer(player, server, deserializedLocation, playerName, playerUUID, skin)
             }
         }
 

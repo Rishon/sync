@@ -31,9 +31,9 @@ Drag the jar from ``build/libs`` into all of your instances.
 - ✅ Sync player health
 - ✅ Sync player hunger
 - ✅ Sync player experience
-- ✅ Sync world weather
-- ✅ Sync world time
-- ✅ Sync world border
+- ✅ Sync world weather (Will not work with Folia)
+- ✅ Sync world time (Will not work with Folia)
+- ✅ Sync world border (Will not work with Folia)
 - ✅ Sync player chat
 - ✅ Sync server online players count
 - ✅ Sync player punch animation
@@ -42,7 +42,6 @@ Drag the jar from ``build/libs`` into all of your instances.
 - ✅ Sync player potion effects
 - ✅ Sync swimming animation
 - ✅ Sync glide animation
--
 
 ### In Progress:
 

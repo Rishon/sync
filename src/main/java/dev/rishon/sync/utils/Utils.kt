@@ -10,9 +10,16 @@ object Utils {
     fun getSkin(player: Player): Array<String> {
         val playerNMS = (player as CraftPlayer).handle
         val profile = playerNMS.bukkitEntity.profile
-        val property = profile.properties["textures"].iterator().next()
-        val texture: String = property.value
-        val signature: String = property.signature.toString()
+        var texture: String
+        var signature: String
+        try {
+            val property = profile.properties["textures"].iterator().next()
+            texture = property.value
+            signature = property.signature.toString()
+        } catch (e: Exception) {
+            texture = ""
+            signature = ""
+        }
         return arrayOf(texture, signature)
     }
 
