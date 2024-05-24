@@ -5,6 +5,9 @@
 *.ipr
 *.iws
 
+# Kotlin dir
+.kotlin/
+
 # IntelliJ
 out/
 # mpeltonen/sbt-idea plugin
