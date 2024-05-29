@@ -23,4 +23,4 @@ jobs:
           distribution: "corretto"
           cache: "gradle"
       - name: Gradle Build
-        run: ./gradlew clean :shadowJar
+        run: gradle clean :shadowJar
