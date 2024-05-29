@@ -13,3 +13,5 @@ mysql:
   database: ""
   username: ""
   password: ""
+
+player-data: # What is being saved to database to allow for syncing across instances

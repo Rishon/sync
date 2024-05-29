@@ -177,53 +177,61 @@ class RedisData : IDataModule {
     }
 
     fun loadPlayerInfo(player: Player, playerData: PlayerData) {
-        // Load player inventory
-        playerData.loadInventory(player, playerData)
-        // Load player location
-        val locationMap = playerData.location
-        if (locationMap.isNotEmpty()) {
-            val location = Location.deserialize(playerData.location)
-            player.teleportAsync(location)
-        }
         // Set instance ID
         playerData.instanceID = Sync.instance.instanceID
+
+        // Load player inventory
+        if (DataType.INVENTORY.isSynced) playerData.loadInventory(player, playerData)
+        // Load player location
+        if (DataType.LOCATION.isSynced) {
+            val locationMap = playerData.location
+            if (locationMap.isNotEmpty()) {
+                val location = Location.deserialize(playerData.location)
+                player.teleportAsync(location)
+            }
+        }
+
         // Load player exp points
-        player.exp = playerData.expPoints
+        if (DataType.EXP_POINTS.isSynced) player.exp = playerData.expPoints
         // Load player exp level
-        player.level = playerData.expLevel
+        if (DataType.EXP_LEVEL.isSynced) player.level = playerData.expLevel
         // Load player health
-        player.health = playerData.health
+        if (DataType.HEALTH.isSynced) player.health = playerData.health
         // Load player max health
-        player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue = playerData.maxHealth
+        if (DataType.MAX_HEALTH.isSynced) player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue =
+            playerData.maxHealth
         // Load player hunger
-        player.foodLevel = playerData.hunger
+        if (DataType.HUNGER.isSynced) player.foodLevel = playerData.hunger
         // Load player gamemode
-        player.gameMode = playerData.gamemode
+        if (DataType.GAMEMODE.isSynced) player.gameMode = playerData.gamemode
         // Load player effects
-        playerData.potionEffects.forEach { player.addPotionEffect(PotionEffect(it)) }
+        if (DataType.POTION_EFFECTS.isSynced) playerData.potionEffects.forEach { player.addPotionEffect(PotionEffect(it)) }
     }
 
     fun savePlayerInfo(player: Player, playerData: PlayerData) {
         // Save current player inventory
-        playerData.inventory = InventorySerialization.toBase64(player.inventory)
+        if (DataType.INVENTORY.isSynced) playerData.inventory = InventorySerialization.toBase64(player.inventory)
         // Save player location
-        playerData.location = player.location.serialize()
+        if (DataType.LOCATION.isSynced) playerData.location = player.location.serialize()
         // Save player exp points
-        playerData.expPoints = player.exp
+        if (DataType.EXP_POINTS.isSynced) playerData.expPoints = player.exp
         // Save player exp level
-        playerData.expLevel = player.level
+        if (DataType.EXP_LEVEL.isSynced) playerData.expLevel = player.level
         // Save player health
-        playerData.health = player.health
+        if (DataType.HEALTH.isSynced) playerData.health = player.health
         // Save player max health
-        playerData.maxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.value ?: 20.0
+        if (DataType.MAX_HEALTH.isSynced) playerData.maxHealth =
+            player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.value ?: 20.0
         // Save player hunger
-        playerData.hunger = player.foodLevel
+        if (DataType.HUNGER.isSynced) playerData.hunger = player.foodLevel
         // Save player gamemode
-        playerData.gamemode = player.gameMode
+        if (DataType.GAMEMODE.isSynced) playerData.gamemode = player.gameMode
         // Save player effects
-        val effectsCollection: MutableCollection<MutableMap<String, Any>> = mutableListOf()
-        player.activePotionEffects.forEach { effectsCollection.add(it.serialize()) }
-        playerData.potionEffects = effectsCollection.toList()
+        if (DataType.EXP_POINTS.isSynced) {
+            val effectsCollection: MutableCollection<MutableMap<String, Any>> = mutableListOf()
+            player.activePotionEffects.forEach { effectsCollection.add(it.serialize()) }
+            playerData.potionEffects = effectsCollection.toList()
+        }
     }
 
     companion object {

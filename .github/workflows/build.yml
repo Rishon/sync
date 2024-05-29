@@ -1,4 +1,4 @@
-name: Build Gradle Project
+name: Build Gradle
 
 on:
   push:
@@ -21,6 +21,5 @@ jobs:
         with:
           java-version: 21
           distribution: "corretto"
-          cache: "gradle"
       - name: Gradle Build
         run: gradle clean :shadowJar
