@@ -227,7 +227,7 @@ class RedisData : IDataModule {
         // Save player gamemode
         if (DataType.GAMEMODE.isSynced) playerData.gamemode = player.gameMode
         // Save player effects
-        if (DataType.EXP_POINTS.isSynced) {
+        if (DataType.POTION_EFFECTS.isSynced) {
             val effectsCollection: MutableCollection<MutableMap<String, Any>> = mutableListOf()
             player.activePotionEffects.forEach { effectsCollection.add(it.serialize()) }
             playerData.potionEffects = effectsCollection.toList()
