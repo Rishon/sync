@@ -75,7 +75,7 @@ class SyncAPI {
     }
 
     companion object {
-        // Static instance
+        // Static-Access
         lateinit var instance: SyncAPI
 
         @JvmStatic

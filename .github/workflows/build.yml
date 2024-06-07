@@ -12,11 +12,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v4
-      - name: Validate Gradle Wrapper
+      - name: Wrapper Validation
         uses: gradle/actions/wrapper-validation@v3
-      - name: Set up JDK 21
+      - name: Java Setup
         uses: actions/setup-java@v4
         with:
           java-version: 21

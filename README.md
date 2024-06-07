@@ -34,10 +34,10 @@ Drag the jar from ``build/libs`` into all of your instances.
 - ✅ Sync world weather (Will not work with Folia)
 - ✅ Sync world time (Will not work with Folia)
 - ✅ Sync world border (Will not work with Folia)
+- ✅ Sync world difficulty (Will not work with Folia)
 - ✅ Sync player chat
 - ✅ Sync server online players count
 - ✅ Sync player punch animation
-- ✅ Sync world difficulty
 - ✅ Sync player gamemode
 - ✅ Sync player potion effects
 - ✅ Sync swimming animation

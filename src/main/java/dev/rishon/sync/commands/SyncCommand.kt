@@ -3,7 +3,6 @@ package dev.rishon.sync.commands
 import dev.rishon.sync.enums.Colors
 import dev.rishon.sync.handler.MainHandler
 import dev.rishon.sync.utils.ColorUtil
-import dev.rishon.sync.utils.PluginMessageUtil
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -22,7 +21,7 @@ class SyncCommand(val handler: MainHandler) : CommandExecutor {
         when (args?.get(0)) {
             "test" -> {
                 val player: Player = sender as Player
-                PluginMessageUtil.sendPluginMessage(player, "BungeeCord", "GetPlayerServer", player.name)
+
             }
         }
 
