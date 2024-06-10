@@ -33,7 +33,7 @@ dependencies {
     implementation("com.zaxxer:HikariCP:5.1.0")
     implementation("me.lucko:jar-relocator:1.7")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.17.1")
-    implementation("systems.rishon:selautils:1.0.0")
+    implementation("systems.rishon:utils-api:1.0.0")
 }
 
 val targetJavaVersion = 21
