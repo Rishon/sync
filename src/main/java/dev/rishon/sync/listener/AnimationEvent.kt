@@ -40,9 +40,10 @@ class AnimationEvent : Listener {
         val player = event.player
         val uuid = player.uniqueId
         val isSneaking = event.isSneaking
+        val isFlying = player.isFlying
         val isSwimming = player.isSwimming
         if (isSwimming) return
-        JedisManager.instance.sendPacket(SneakPacket(uuid, isSneaking))
+        JedisManager.instance.sendPacket(SneakPacket(uuid, isSneaking, isFlying))
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

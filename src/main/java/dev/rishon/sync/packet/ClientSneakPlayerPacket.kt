@@ -12,13 +12,18 @@ import org.bukkit.entity.Player
 object ClientSneakPlayerPacket : IPacket {
 
     @JvmStatic
-    fun sendPacket(player: Player, serverPlayer: ServerPlayer, isSneaking: Boolean) {
+    fun sendPacket(player: Player, serverPlayer: ServerPlayer, isSneaking: Boolean, isFlying: Boolean) {
         val craftPlayer = player as CraftPlayer
         val connection = craftPlayer.handle.connection
         val pose: Pose = if (isSneaking) Pose.CROUCHING else Pose.STANDING
         val flag: Byte = if (isSneaking) 0x02 else 0
         val dataValueList: MutableList<DataValue<*>> = getDataWatcher(serverPlayer).nonDefaultValues ?: return
-        dataValueList.add(DataValue.create(EntityDataAccessor(6, EntityDataSerializers.POSE), pose))
+
+        if (!isFlying) dataValueList.add(
+            DataValue.create(
+                EntityDataAccessor(6, EntityDataSerializers.POSE), pose
+            )
+        )
         dataValueList.add(DataValue.create(EntityDataAccessor(0, EntityDataSerializers.BYTE), flag))
         connection.send(ClientboundSetEntityDataPacket(serverPlayer.id, dataValueList))
     }

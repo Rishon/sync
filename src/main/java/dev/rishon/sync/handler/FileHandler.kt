@@ -20,6 +20,7 @@ class FileHandler(private var instance: Sync) : IHandler {
     var transferPackets: Boolean = false
     var isUnderProxy: Boolean = false
     var debug: Boolean = false
+    var playerChatFormat: String? = null
 
     override fun init() {
         handler = this;
@@ -46,6 +47,7 @@ class FileHandler(private var instance: Sync) : IHandler {
         this.transferPackets = this.config?.getBoolean("allow-transfer-packets") == true
         this.isUnderProxy = this.config?.getBoolean("is-under-proxy") == true
         this.debug = this.config?.getBoolean("debug") == true
+        this.playerChatFormat = this.config?.getString("player-chat-format")
     }
 
     private fun handleTransferPackets() {

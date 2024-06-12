@@ -16,4 +16,6 @@ mysql:
   username: ""
   password: ""
 
+player-chat-format: "<gray>{player}: <white>{message}"
+
 player-data: # What is being saved to database to allow for syncing across instances
