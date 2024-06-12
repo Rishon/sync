@@ -1,17 +1,17 @@
 package dev.rishon.sync.handler
 
 import dev.rishon.sync.Sync
-import dev.rishon.sync.commands.SyncCommand
-import dev.rishon.sync.commands.TransferCommand
-import dev.rishon.sync.commands.WhereAmICommand
+import dev.rishon.sync.command.SyncCommand
+import dev.rishon.sync.command.TransferCommand
+import dev.rishon.sync.command.WhereAmICommand
 import dev.rishon.sync.data.CacheData
 import dev.rishon.sync.data.IDataModule
 import dev.rishon.sync.data.RedisData
 import dev.rishon.sync.data.SQLData
 import dev.rishon.sync.jedis.JedisManager
-import dev.rishon.sync.jedis.packets.ConnectPacket
-import dev.rishon.sync.jedis.packets.DisconnectPacket
-import dev.rishon.sync.listeners.*
+import dev.rishon.sync.jedis.packet.ConnectPacket
+import dev.rishon.sync.jedis.packet.DisconnectPacket
+import dev.rishon.sync.listener.*
 import dev.rishon.sync.tasks.InstanceTask
 import dev.rishon.sync.utils.SchedulerUtil
 import dev.rishon.sync.utils.Utils

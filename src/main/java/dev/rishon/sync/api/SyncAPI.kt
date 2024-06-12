@@ -3,7 +3,7 @@ package dev.rishon.sync.api
 import dev.rishon.sync.data.RedisData
 import dev.rishon.sync.handler.FileHandler
 import dev.rishon.sync.jedis.JedisManager
-import dev.rishon.sync.jedis.packets.MessagePacket
+import dev.rishon.sync.jedis.packet.MessagePacket
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.json.JSONComponentSerializer
 import java.util.*

@@ -4,7 +4,7 @@ import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
 import com.google.gson.JsonParseException
-import dev.rishon.sync.jedis.packets.IPacket
+import dev.rishon.sync.jedis.packet.IPacket
 import java.lang.reflect.Type
 
 class IPacketDeserializer : JsonDeserializer<IPacket> {

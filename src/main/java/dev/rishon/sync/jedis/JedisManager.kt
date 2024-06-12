@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import dev.rishon.sync.api.SyncAPI
 import dev.rishon.sync.data.RedisData
-import dev.rishon.sync.jedis.packets.IPacket
+import dev.rishon.sync.jedis.packet.IPacket
 import dev.rishon.sync.utils.LoggerUtil
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPubSub

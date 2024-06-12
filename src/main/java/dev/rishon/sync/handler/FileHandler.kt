@@ -19,6 +19,7 @@ class FileHandler(private var instance: Sync) : IHandler {
     var instanceFormat: String? = null
     var transferPackets: Boolean = false
     var isUnderProxy: Boolean = false
+    var debug: Boolean = false
 
     override fun init() {
         handler = this;
@@ -44,6 +45,7 @@ class FileHandler(private var instance: Sync) : IHandler {
         this.instanceFormat = this.instancePrefix?.replace("{id}", Sync.instance.instanceID)
         this.transferPackets = this.config?.getBoolean("allow-transfer-packets") == true
         this.isUnderProxy = this.config?.getBoolean("is-under-proxy") == true
+        this.debug = this.config?.getBoolean("debug") == true
     }
 
     private fun handleTransferPackets() {

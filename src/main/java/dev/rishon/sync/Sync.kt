@@ -26,8 +26,8 @@ class Sync : JavaPlugin() {
         if (isFolia) this.logger.info("Folia detected! Still experimental!")
 
         // Register plugin channel
-        server.messenger.registerOutgoingPluginChannel(this, "BungeeCord")
-        server.messenger.registerOutgoingPluginChannel(this, "sync:toproxy")
+        this.server.messenger.registerOutgoingPluginChannel(this, "BungeeCord")
+        this.server.messenger.registerOutgoingPluginChannel(this, "sync:toproxy")
 
         // Register handlers
         this.handlers.add(FileHandler(this))
