@@ -6,6 +6,7 @@ import dev.rishon.sync.enums.Colors
 import dev.rishon.sync.handler.FileHandler
 import dev.rishon.sync.handler.MainHandler
 import dev.rishon.sync.utils.ColorUtil
+import dev.rishon.sync.utils.LoggerUtil
 import dev.rishon.sync.utils.SchedulerUtil
 import org.bukkit.configuration.file.FileConfiguration
 import java.sql.Connection
@@ -24,24 +25,30 @@ class SQLData(val handler: MainHandler) : IDataModule {
     private val playersTable = "sync_players"
 
     override fun init() {
-        val config: FileConfiguration? = FileHandler.handler.config
-        val path = "mysql."
-        val host = config?.getString(path + "host") ?: throw RuntimeException("MySQL host is null")
-        val port = config.getInt(path + "port")
-        val database = config.getString(path + "database") ?: throw RuntimeException("MySQL database is null")
-        val username = config.getString(path + "username") ?: throw RuntimeException("MySQL username is null")
-        val password = config.getString(path + "password") ?: throw RuntimeException("MySQL password is null")
+        try {
+            val config: FileConfiguration? = FileHandler.handler.config
+            val path = "mysql."
+            val host = config?.getString(path + "host") ?: throw RuntimeException("MySQL host is null")
+            val port = config.getInt(path + "port")
+            val database = config.getString(path + "database") ?: throw RuntimeException("MySQL database is null")
+            val username = config.getString(path + "username") ?: throw RuntimeException("MySQL username is null")
+            val password = config.getString(path + "password") ?: throw RuntimeException("MySQL password is null")
 
-        this.hikariConfig.jdbcUrl =
-            "jdbc:mysql://$host:$port/$database?autoReconnect=true&useSSL=false&useUnicode=true&characterEncoding=utf8&useJDBCCompliantTimezoneShift=true&serverTimezone=UTC"
-        this.hikariConfig.username = username
-        this.hikariConfig.password = password
-        this.hikariConfig.maximumPoolSize = 10
-        this.hikariConfig.connectionTimeout = 30000
+            this.hikariConfig.jdbcUrl =
+                "jdbc:mysql://$host:$port/$database?autoReconnect=true&useSSL=false&useUnicode=true&characterEncoding=utf8&useJDBCCompliantTimezoneShift=true&serverTimezone=UTC"
+            this.hikariConfig.username = username
+            this.hikariConfig.password = password
+            this.hikariConfig.maximumPoolSize = 10
+            this.hikariConfig.connectionTimeout = 30000
 
-        this.hikariDataSource = HikariDataSource(hikariConfig)
+            this.hikariDataSource = HikariDataSource(hikariConfig)
 
-        createTables(database)
+            createTables(database)
+
+        } catch (e: Exception) {
+            LoggerUtil.error("An error occurred while initializing, disabling plugin... SQLData: ${e.message}")
+            this.handler.instance.server.pluginManager.disablePlugin(this.handler.instance)
+        }
     }
 
     override fun end() {

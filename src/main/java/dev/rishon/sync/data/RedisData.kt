@@ -65,7 +65,8 @@ class RedisData : IDataModule {
             this.jedisManager = JedisManager(this)
         } catch (e: Exception) {
             e.printStackTrace()
-            throw RuntimeException(e)
+            LoggerUtil.error("An error occurred while initializing, disabling plugin... RedisData: ${e.message}")
+            Sync.instance.server.pluginManager.disablePlugin(Sync.instance)
         }
     }
 
@@ -100,6 +101,28 @@ class RedisData : IDataModule {
             val json = jedis[serverIdentifier] ?: return ServerData()
             return ServerData.fromJson(json)
         }
+    }
+
+    fun getAllPlayerData(): List<PlayerData> {
+        val future: CompletableFuture<List<PlayerData>> = CompletableFuture.supplyAsync {
+            jedisPool!!.resource.use { jedis ->
+                val scanParams = ScanParams().match("sync_player_*")
+                var cursor = "0"
+                val players = mutableListOf<PlayerData>()
+                do {
+                    val scanResult = jedis.scan(cursor, scanParams)
+                    val keys = scanResult.result
+                    for (key in keys) {
+                        val uuid = UUID.fromString(key.replace("sync_player_", ""))
+                        val playerData = getPlayerData(uuid) ?: continue
+                        players.add(playerData)
+                    }
+                    cursor = scanResult.cursor
+                } while (cursor != "0")
+                return@supplyAsync players
+            }
+        }
+        return future.join()
     }
 
     private fun getInstanceData(instanceID: String): ServerData? {
@@ -179,6 +202,9 @@ class RedisData : IDataModule {
     fun loadPlayerInfo(player: Player, playerData: PlayerData) {
         // Set instance ID
         playerData.instanceID = Sync.instance.instanceID
+
+        // Load player username
+        playerData.playerName = player.name
 
         // Load player inventory
         if (DataType.INVENTORY.isSynced) playerData.loadInventory(player, playerData)

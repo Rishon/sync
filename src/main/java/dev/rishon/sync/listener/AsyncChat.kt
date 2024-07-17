@@ -16,6 +16,8 @@ class AsyncChat : Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     private fun onAsyncChat(event: AsyncChatEvent) {
+        event.isCancelled = true
+
         val player = event.player
         val fileHandler = FileHandler.handler
 

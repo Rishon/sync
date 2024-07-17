@@ -18,6 +18,9 @@ class PlayerData {
     @JsonProperty("uuid")
     var uuid: UUID? = null
 
+    @JsonProperty("player_name")
+    var playerName: String = ""
+
     @JsonProperty("instanceID")
     var instanceID: String? = ""
 

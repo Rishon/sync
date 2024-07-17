@@ -33,6 +33,15 @@ class SyncAPI {
     }
 
     /*
+     * Get the names of online players across all instances.
+     * @return A list of player names.
+     */
+    fun getOnlinePlayersNames(): List<String>? {
+        val playersData = RedisData.instance.getAllPlayerData()
+        return playersData.map { it.playerName }
+    }
+
+    /*
      * Get the instance ID.
      * @return The instance ID as a String.
      */

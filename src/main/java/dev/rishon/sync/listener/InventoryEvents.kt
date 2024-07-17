@@ -41,14 +41,17 @@ class InventoryEvents(private val redisData: RedisData) : Listener {
         val equipmentList = mutableListOf<Pair<EquipmentSlot, MutableMap<String, Any>>>()
 
         player.equipment.armorContents.forEachIndexed { index, itemStack ->
+            val adjustedIndex = index + 2
+
             if (itemStack == null) {
                 val emptyItemStack = ItemStack(Material.AIR)
                 addEquipment(
-                    equipmentList, EquipmentSlot.byTypeAndIndex(EquipmentSlot.Type.ARMOR, index), emptyItemStack
+                    equipmentList, EquipmentSlot.entries[adjustedIndex], emptyItemStack
                 )
                 return@forEachIndexed
             }
-            addEquipment(equipmentList, EquipmentSlot.byTypeAndIndex(EquipmentSlot.Type.ARMOR, index), itemStack)
+
+            addEquipment(equipmentList, EquipmentSlot.entries[adjustedIndex], itemStack)
         }
 
         JedisManager.instance.sendPacket(EquipmentPacket(uuid, equipmentList))

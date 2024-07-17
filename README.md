@@ -1,5 +1,7 @@
 # sync
 
+Minecraft server version: 1.21
+
 ## Setup
 
 ```

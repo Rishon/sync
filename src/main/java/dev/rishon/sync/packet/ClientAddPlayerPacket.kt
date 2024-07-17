@@ -12,23 +12,24 @@ import org.bukkit.entity.Player
 
 object ClientAddPlayerPacket : IPacket {
 
+    // Packet list
+    private val packetList: MutableList<ClientboundPlayerInfoUpdatePacket.Action> = listOf(
+        ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER,
+        ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LISTED,
+        ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY,
+        ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME,
+        ClientboundPlayerInfoUpdatePacket.Action.UPDATE_GAME_MODE
+    ).toMutableList()
+
     @JvmStatic
     fun sendPacket(player: Player, serverPlayer: ServerPlayer) {
         val craftPlayer = player as CraftPlayer
         val connection = craftPlayer.handle.connection
         setValue(serverPlayer, "c", craftPlayer.handle.connection);
-        connection.send(
-            ClientboundPlayerInfoUpdatePacket(
-                ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER, serverPlayer
-            )
-        )
-        connection.send(
-            ClientboundPlayerInfoUpdatePacket(
-                ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LISTED, serverPlayer
-            )
-        )
 
-        connection.send(ClientboundAddEntityPacket(serverPlayer))
+        packetList.forEach { action -> connection.send(ClientboundPlayerInfoUpdatePacket(action, serverPlayer)) }
+
+        connection.send(ClientboundAddEntityPacket(serverPlayer, serverPlayer.id, serverPlayer.blockPosition()))
 
         // Update entity metadata
         val dataValues: MutableList<SynchedEntityData.DataValue<*>> = ArrayList()

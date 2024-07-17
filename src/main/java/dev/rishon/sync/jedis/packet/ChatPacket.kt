@@ -8,8 +8,6 @@ class ChatPacket(private val playerName: String, private val json: String) : IPa
 
     override fun onReceive() {
         LoggerUtil.debug("Received chat packet for $playerName")
-        val player = Bukkit.getPlayer(playerName)
-        if (player != null) return // Don't send the message to the same server as player
         val server = Bukkit.getServer()
         val component = JSONComponentSerializer.json().deserialize(json);
         server.sendMessage(component)

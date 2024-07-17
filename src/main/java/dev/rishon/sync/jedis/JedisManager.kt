@@ -38,8 +38,7 @@ class JedisManager(redisData: RedisData) {
                             val packetClass = Class.forName(packetClassName)
                             val packet: IPacket = gson.fromJson(jsonObject, packetClass) as IPacket
                             packet.onReceive()
-                        } catch (exception: Exception) {
-                            LoggerUtil.error("Failed to receive packet: $message")
+                        } catch (ignored: Exception) {
                         }
                     }, executorService)
                 }
