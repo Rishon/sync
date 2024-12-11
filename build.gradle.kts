@@ -16,10 +16,15 @@ repositories {
         name = "papermc-repo"
         url = uri("https://repo.papermc.io/repository/maven-public/")
     }
+    maven {
+        name = "placeholderapi-repo"
+        url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+    }
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
+    compileOnly("me.clip:placeholderapi:2.11.5")
 
     paperweight.paperDevBundle("1.21-R0.1-SNAPSHOT")
 
@@ -76,4 +81,7 @@ publishing {
             from(components["java"])
         }
     }
+}
+kotlin {
+    jvmToolchain(8)
 }

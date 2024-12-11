@@ -104,8 +104,8 @@ class RedisData : IDataModule {
     }
 
     fun getAllPlayerData(): List<PlayerData> {
-        val future: CompletableFuture<List<PlayerData>> = CompletableFuture.supplyAsync {
-            jedisPool!!.resource.use { jedis ->
+        val future = CompletableFuture.supplyAsync {
+            jedisPool?.resource?.use { jedis ->
                 val scanParams = ScanParams().match("sync_player_*")
                 var cursor = "0"
                 val players = mutableListOf<PlayerData>()
@@ -119,11 +119,12 @@ class RedisData : IDataModule {
                     }
                     cursor = scanResult.cursor
                 } while (cursor != "0")
-                return@supplyAsync players
-            }
+                players
+            } ?: emptyList()
         }
         return future.join()
     }
+
 
     private fun getInstanceData(instanceID: String): ServerData? {
         jedisPool!!.resource.use { jedis ->

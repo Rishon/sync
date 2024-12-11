@@ -22,6 +22,10 @@ class FileHandler(private var instance: Sync) : IHandler {
     var debug: Boolean = false
     var playerChatFormat: String? = null
 
+    // Connections Settings
+    var joinMessage: Pair<Boolean, String> = Pair(false, "")
+    var quitMessage: Pair<Boolean, String> = Pair(false, "")
+
     override fun init() {
         handler = this;
         createConfig()
@@ -48,6 +52,16 @@ class FileHandler(private var instance: Sync) : IHandler {
         this.isUnderProxy = this.config?.getBoolean("is-under-proxy") == true
         this.debug = this.config?.getBoolean("debug") == true
         this.playerChatFormat = this.config?.getString("player-chat-format")
+
+        // Connections
+        this.joinMessage = Pair(
+            this.config?.getBoolean("connections.join-message.enabled") == true,
+            this.config?.getString("connections.join-message.message") ?: ""
+        )
+        this.quitMessage = Pair(
+            this.config?.getBoolean("connections.quit-message.enabled") == true,
+            this.config?.getString("connections.quit-message.message") ?: ""
+        )
     }
 
     private fun handleTransferPackets() {

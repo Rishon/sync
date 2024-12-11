@@ -8,6 +8,8 @@ folia-supported: true
 authors: [ Rishon ]
 description: sync players between instances
 website: https://rishon.systems
+softdepend:
+  - PlaceholderAPI
 commands:
   sync:
     permission: sync.command.use

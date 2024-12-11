@@ -18,4 +18,12 @@ mysql:
 
 player-chat-format: "<gray>{player}: <white>{message}"
 
+connections:
+  join-message:
+    enabled: true
+    message: "<#FFD964>{player} has joined the server!"
+  quit-message:
+    enabled: true
+    message: "<#EA3526>{player} has left the server!"
+
 player-data: # What is being saved to database to allow for syncing across instances

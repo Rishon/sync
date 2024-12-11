@@ -1,5 +1,6 @@
 package dev.rishon.sync.command
 
+import dev.rishon.sync.api.SyncAPI
 import dev.rishon.sync.enums.Colors
 import dev.rishon.sync.handler.MainHandler
 import dev.rishon.sync.utils.ColorUtil
@@ -21,7 +22,7 @@ class SyncCommand(val handler: MainHandler) : CommandExecutor {
         when (args?.get(0)) {
             "test" -> {
                 val player: Player = sender as Player
-
+                player.sendMessage(SyncAPI.getAPI().getOnlinePlayersNames().toString())
             }
         }
 

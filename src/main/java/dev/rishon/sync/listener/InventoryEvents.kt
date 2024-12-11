@@ -2,6 +2,7 @@ package dev.rishon.sync.listener
 
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent
 import com.mojang.datafixers.util.Pair
+import dev.rishon.sync.data.DataType
 import dev.rishon.sync.data.RedisData
 import dev.rishon.sync.jedis.JedisManager
 import dev.rishon.sync.jedis.packet.EquipmentPacket
@@ -20,8 +21,12 @@ class InventoryEvents(private val redisData: RedisData) : Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     private fun onInventoryCloseEvent(event: InventoryCloseEvent) {
+        // Check if inventory is synced in config
+        if (!DataType.INVENTORY.isSynced) return
+
         val player = event.player
         val uuid = player.uniqueId
+
         val playerData = redisData.getPlayerData(uuid) ?: return
         val playerInventory = player.inventory
         playerData.inventory = InventorySerialization.toBase64(playerInventory)
@@ -29,8 +34,12 @@ class InventoryEvents(private val redisData: RedisData) : Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     private fun onArmorEquip(event: PlayerArmorChangeEvent) {
+        // Check if inventory is synced in config
+        if (!DataType.INVENTORY.isSynced) return
+
         val player = event.player
         val uuid = player.uniqueId
+
         val playerData = redisData.getPlayerData(uuid) ?: return
         val playerInventory = player.inventory
 
@@ -59,6 +68,11 @@ class InventoryEvents(private val redisData: RedisData) : Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     private fun onItemSwap(event: PlayerItemHeldEvent) {
+        if (event.isCancelled) return
+
+        // Check if inventory is synced in config
+        if (!DataType.INVENTORY.isSynced) return
+
         val player = event.player
         val uuid = player.uniqueId
 
@@ -79,8 +93,12 @@ class InventoryEvents(private val redisData: RedisData) : Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     private fun onOffhandSwap(event: PlayerSwapHandItemsEvent) {
+        // Check if inventory is synced in config
+        if (!DataType.INVENTORY.isSynced) return
+
         val player = event.player
         val uuid = player.uniqueId
+
         // TODO: Improve this
         val equipmentList = mutableListOf<Pair<EquipmentSlot, MutableMap<String, Any>>>()
 

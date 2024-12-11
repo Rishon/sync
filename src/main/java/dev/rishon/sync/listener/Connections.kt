@@ -1,7 +1,7 @@
 package dev.rishon.sync.listener
 
 import dev.rishon.sync.api.SyncAPI
-import dev.rishon.sync.enums.Colors
+import dev.rishon.sync.handler.FileHandler
 import dev.rishon.sync.handler.MainHandler
 import dev.rishon.sync.jedis.JedisManager
 import dev.rishon.sync.jedis.packet.ConnectPacket
@@ -33,11 +33,14 @@ class Connections(private val handler: MainHandler) : Listener {
 
         val player = event.player
         val uuid = player.uniqueId
+
+        val fileHandler = FileHandler.handler
         val redisData = this.handler.redisData
 
         // Load player data
         val playerData = this.handler.redisData?.getPlayerData(uuid)
             ?: return player.kick(ColorUtil.translate("An error occurred while loading your data. Please try again."))
+
         redisData?.loadPlayerInfo(player, playerData)
 
         // Add player to online players
@@ -48,7 +51,8 @@ class Connections(private val handler: MainHandler) : Listener {
         )
 
         // Broadcast join message
-        SyncAPI.getAPI().broadcastMessage(ColorUtil.translate("${player.name} has joined the server!", Colors.INFO))
+        if (fileHandler.joinMessage.first) SyncAPI.getAPI()
+            .broadcastMessage(ColorUtil.translate(fileHandler.joinMessage.second))
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -57,6 +61,8 @@ class Connections(private val handler: MainHandler) : Listener {
 
         val player = event.player
         val uuid = player.uniqueId
+
+        val fileHandler = FileHandler.handler
         val redisData = this.handler.redisData
         val playerData = redisData?.getPlayerData(uuid) ?: return
 
@@ -76,7 +82,8 @@ class Connections(private val handler: MainHandler) : Listener {
         JedisManager.instance.sendPacket(DisconnectPacket(uuid))
 
         // Broadcast quit message
-        SyncAPI.getAPI().broadcastMessage(ColorUtil.translate("${player.name} has left the server!", Colors.NEGATIVE))
+        if (fileHandler.quitMessage.first) SyncAPI.getAPI()
+            .broadcastMessage(ColorUtil.translate(fileHandler.quitMessage.second))
     }
 
 }

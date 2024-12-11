@@ -1,6 +1,7 @@
 package dev.rishon.sync.handler
 
 import dev.rishon.sync.Sync
+import dev.rishon.sync.api.SyncAPI
 import dev.rishon.sync.command.SyncCommand
 import dev.rishon.sync.command.TransferCommand
 import dev.rishon.sync.command.WhereAmICommand
@@ -11,9 +12,8 @@ import dev.rishon.sync.data.SQLData
 import dev.rishon.sync.jedis.JedisManager
 import dev.rishon.sync.jedis.packet.ConnectPacket
 import dev.rishon.sync.jedis.packet.DisconnectPacket
+import dev.rishon.sync.jedis.packet.LogPacket
 import dev.rishon.sync.listener.*
-import dev.rishon.sync.tasks.InstanceTask
-import dev.rishon.sync.utils.SchedulerUtil
 import dev.rishon.sync.utils.Utils
 
 class MainHandler(val instance: Sync) : IHandler {
@@ -24,11 +24,15 @@ class MainHandler(val instance: Sync) : IHandler {
     var redisData: RedisData? = null
     var cacheData: CacheData? = null
 
-    // Tasks
-    private var instanceTask: InstanceTask? = null
+    // Hooks
+    var placeholderAPI: Boolean? = null
 
     override fun init() {
         handler = this
+
+        // Initialize hooks
+        this.placeholderAPI = this.instance.server.pluginManager.getPlugin("PlaceholderAPI") != null
+
         // Register dataModules
         this.sqlData = SQLData(this)
         this.redisData = RedisData()
@@ -42,9 +46,6 @@ class MainHandler(val instance: Sync) : IHandler {
         registerListeners()
         registerCommands()
 
-        // Load tasks
-        loadTasks()
-
         // Load online players
         loadOnlinePlayers()
     }
@@ -52,6 +53,14 @@ class MainHandler(val instance: Sync) : IHandler {
     override fun end() {
         // Save online players
         saveOnlinePlayers()
+        // Notify other instances
+        JedisManager.instance.sendPacket(
+            LogPacket(
+                "Instance ${
+                    SyncAPI.getAPI().getFormattedInstanceID()
+                } has been disconnected"
+            )
+        )
         // End dataModules
         this.dataModules.forEach { it.end() }
     }
@@ -73,11 +82,6 @@ class MainHandler(val instance: Sync) : IHandler {
 
         instance.getCommand("transfer")?.setExecutor(TransferCommand(this))
         instance.getCommand("transfer")?.tabCompleter = TransferCommand(this)
-    }
-
-    private fun loadTasks() {
-        this.instanceTask = InstanceTask(this)
-        SchedulerUtil.runTaskTimerAsync({ this.instanceTask!!.run() }, 20)
     }
 
     private fun loadOnlinePlayers() {

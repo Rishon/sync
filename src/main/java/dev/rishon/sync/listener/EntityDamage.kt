@@ -1,6 +1,7 @@
 package dev.rishon.sync.listener
 
 import com.destroystokyo.paper.event.player.PlayerUseUnknownEntityEvent
+import dev.rishon.sync.handler.FileHandler
 import dev.rishon.sync.handler.MainHandler
 import dev.rishon.sync.jedis.JedisManager
 import dev.rishon.sync.jedis.packet.DamagePacket
@@ -19,7 +20,11 @@ class EntityDamage(private val handler: MainHandler) : Listener {
 
         if (collection.isEmpty()) return
 
+        val fileHandler = FileHandler.handler
         val entityID = event.entityId
+
+        // Still in development
+        if (!fileHandler.debug) return
 
         if (collection.any { it.first == entityID }) {
             val fakePlayer = collection.first { it.first == entityID }.second
