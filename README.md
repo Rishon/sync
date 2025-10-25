@@ -1,6 +1,6 @@
 # sync
 
-Minecraft server version: 1.21
+Minecraft server version: 1.21.10
 
 ## Setup
 
@@ -12,7 +12,7 @@ $ cd sync
 ## Build
 
 ``
-./gradlew clean :shadowJar
+./gradlew clean build
 ``
 
 ## Run

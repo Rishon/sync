@@ -1,38 +1,33 @@
 plugins {
-    java
-    id("io.papermc.paperweight.userdev") version "1.7.1"
-    id("org.jetbrains.kotlin.jvm") version "2.0.20-Beta2"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    kotlin("jvm") version "2.2.21"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.19"
+    id("com.gradleup.shadow") version "9.2.2"
     id("maven-publish")
 }
 
 group = "dev.rishon.sync"
-version = "1.1"
+version = "1.2"
+
+val serverVersion = "1.21.9-rc1"
 
 repositories {
     mavenCentral()
     gradlePluginPortal()
-    maven {
-        name = "papermc-repo"
-        url = uri("https://repo.papermc.io/repository/maven-public/")
-    }
-    maven {
-        name = "placeholderapi-repo"
-        url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/")
-    }
+    maven("https://repo.papermc.io/repository/maven-public/")
+    maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
-    compileOnly("me.clip:placeholderapi:2.11.5")
+    // Paper
+    paperweight.paperDevBundle("$serverVersion-R0.1-SNAPSHOT")
 
-    paperweight.paperDevBundle("1.21-R0.1-SNAPSHOT")
+    // Hooks
+    compileOnly("me.clip:placeholderapi:2.11.6")
 
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("redis.clients:jedis:5.1.3")
-    implementation("com.zaxxer:HikariCP:5.1.0")
+    // Data
+    implementation("redis.clients:jedis:7.0.0")
+    implementation("com.zaxxer:HikariCP:7.0.2")
     implementation("me.lucko:jar-relocator:1.7")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")
 }
 
 val targetJavaVersion = 21
@@ -44,10 +39,21 @@ tasks.withType<JavaCompile>().configureEach {
     }
 }
 
+kotlin {
+    jvmToolchain(targetJavaVersion)
+}
+
+tasks.build {
+    dependsOn(tasks.shadowJar)
+}
+
 tasks.shadowJar {
-    archiveBaseName.set("sync")
-    archiveClassifier.set("")
+    archiveFileName = "${project.name}-${project.version}.jar"
     mergeServiceFiles()
+
+    relocate("com.zaxxer.hikari", "dev.rishon.libs.hikari")
+    relocate("redis.clients.jedis", "dev.rishon.libs.jedis")
+    relocate("me.lucko.jarrelocator", "dev.rishon.libs.jarrelocator")
 }
 
 tasks.processResources {
@@ -81,7 +87,4 @@ publishing {
             from(components["java"])
         }
     }
-}
-kotlin {
-    jvmToolchain(8)
 }

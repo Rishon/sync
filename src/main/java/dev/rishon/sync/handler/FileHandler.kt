@@ -70,7 +70,6 @@ class FileHandler(private var instance: Sync) : IHandler {
             val minecraftServer = MinecraftServer.getServer() as DedicatedServer
             val settings: DedicatedServerSettings = minecraftServer.settings
             settings.properties.properties.setProperty("accepts-transfers", "true")
-            settings.properties.acceptsTransfers = true
             settings.forceSave()
         }
     }

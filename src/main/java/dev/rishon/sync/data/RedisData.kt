@@ -225,7 +225,7 @@ class RedisData : IDataModule {
         // Load player health
         if (DataType.HEALTH.isSynced) player.health = playerData.health
         // Load player max health
-        if (DataType.MAX_HEALTH.isSynced) player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue =
+        if (DataType.MAX_HEALTH.isSynced) player.getAttribute(Attribute.MAX_HEALTH)?.baseValue =
             playerData.maxHealth
         // Load player hunger
         if (DataType.HUNGER.isSynced) player.foodLevel = playerData.hunger
@@ -248,7 +248,7 @@ class RedisData : IDataModule {
         if (DataType.HEALTH.isSynced) playerData.health = player.health
         // Save player max health
         if (DataType.MAX_HEALTH.isSynced) playerData.maxHealth =
-            player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.value ?: 20.0
+            player.getAttribute(Attribute.MAX_HEALTH)?.value ?: 20.0
         // Save player hunger
         if (DataType.HUNGER.isSynced) playerData.hunger = player.foodLevel
         // Save player gamemode

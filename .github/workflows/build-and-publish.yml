@@ -22,7 +22,7 @@ jobs:
           java-version: 21
           distribution: "corretto"
       - name: Gradle Build
-        run: gradle clean :shadowJar
+        run: gradle clean build
   publish:
     runs-on: ubuntu-latest
     steps:

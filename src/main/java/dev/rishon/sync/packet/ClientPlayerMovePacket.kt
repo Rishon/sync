@@ -3,6 +3,8 @@ package dev.rishon.sync.packet
 import net.minecraft.network.protocol.game.ClientboundRotateHeadPacket
 import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket
 import net.minecraft.server.level.ServerPlayer
+import net.minecraft.world.entity.PositionMoveRotation
+import net.minecraft.world.entity.Relative
 import org.bukkit.Location
 import org.bukkit.craftbukkit.entity.CraftPlayer
 import org.bukkit.entity.Player
@@ -19,9 +21,16 @@ object ClientPlayerMovePacket : IPacket {
         val z = deserializeLocaiton.z
         val yaw = deserializeLocaiton.yaw
         val pitch = deserializeLocaiton.pitch
-        serverPlayer.moveTo(x, y, z, yaw, pitch)
+        serverPlayer.snapTo(x, y, z, yaw, pitch)
         serverPlayer.setRot(yaw, pitch)
-        connection.send(ClientboundTeleportEntityPacket(serverPlayer))
+        connection.send(
+            ClientboundTeleportEntityPacket(
+                serverPlayer.id,
+                PositionMoveRotation.of(serverPlayer),
+                mutableSetOf<Relative>(),
+                false
+            )
+        )
         connection.send(
             ClientboundRotateHeadPacket(
                 serverPlayer, ((yaw * 256.0F / 360.0F).toInt().toByte())

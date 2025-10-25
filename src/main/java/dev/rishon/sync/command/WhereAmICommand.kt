@@ -11,7 +11,7 @@ import org.bukkit.entity.Player
 
 class WhereAmICommand(val handler: MainHandler) : CommandExecutor {
 
-    override fun onCommand(sender: CommandSender, p1: Command, p2: String, args: Array<out String>?): Boolean {
+    override fun onCommand(sender: CommandSender, p1: Command, p2: String, args: Array<out String>): Boolean {
 
         if (sender !is Player) {
             sender.sendMessage(ColorUtil.translate("Only players can execute this command!", Colors.ERROR))

@@ -13,7 +13,7 @@ import org.bukkit.entity.Player
 
 class TransferCommand(val handler: MainHandler) : CommandExecutor, TabExecutor {
 
-    override fun onCommand(sender: CommandSender, p1: Command, p2: String, args: Array<out String>?): Boolean {
+    override fun onCommand(sender: CommandSender, p1: Command, p2: String, args: Array<out String>): Boolean {
 
         if (sender !is Player) {
             if (args?.size == 0) {
@@ -64,7 +64,7 @@ class TransferCommand(val handler: MainHandler) : CommandExecutor, TabExecutor {
     }
 
     override fun onTabComplete(
-        sender: CommandSender, p1: Command, p2: String, args: Array<out String>?
+        sender: CommandSender, p1: Command, p2: String, args: Array<out String>
     ): MutableList<String>? {
         if (sender !is Player) return mutableListOf()
         if (args?.size == 1) {

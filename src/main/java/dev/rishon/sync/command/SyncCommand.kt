@@ -9,10 +9,9 @@ import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-
 class SyncCommand(val handler: MainHandler) : CommandExecutor {
 
-    override fun onCommand(sender: CommandSender, p1: Command, p2: String, args: Array<out String>?): Boolean {
+    override fun onCommand(sender: CommandSender, p1: Command, p2: String, args: Array<out String>): Boolean {
 
         if (args?.isEmpty() == true) {
             sender.sendMessage(ColorUtil.translate("Command Usage: /sync <test>", Colors.INFO))
