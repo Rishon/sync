@@ -1,6 +1,6 @@
 name: sync
 version: '${version}'
-main: dev.rishon.sync.Sync
+main: systems.rishon.sync.Sync
 api-version: '1.21'
 prefix: Sync
 load: STARTUP

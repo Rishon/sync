@@ -5,7 +5,7 @@ plugins {
     id("maven-publish")
 }
 
-group = "dev.rishon.sync"
+group = "systems.rishon.sync"
 version = "1.2"
 
 val serverVersion = "1.21.9-rc1"
@@ -51,9 +51,9 @@ tasks.shadowJar {
     archiveFileName = "${project.name}-${project.version}.jar"
     mergeServiceFiles()
 
-    relocate("com.zaxxer.hikari", "dev.rishon.libs.hikari")
-    relocate("redis.clients.jedis", "dev.rishon.libs.jedis")
-    relocate("me.lucko.jarrelocator", "dev.rishon.libs.jarrelocator")
+    relocate("com.zaxxer.hikari", "systems.rishon.libs.hikari")
+    relocate("redis.clients.jedis", "systems.rishon.libs.jedis")
+    relocate("me.lucko.jarrelocator", "systems.rishon.libs.jarrelocator")
 }
 
 tasks.processResources {
